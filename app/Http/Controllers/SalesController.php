@@ -208,6 +208,9 @@ class SalesController extends BaseController
             'is_active' => false
         ];
 
-        Calendar::create($arrModel);
+        $model = Calendar::create($arrModel);
+        $model->refresh();
+
+        return response('Model registrado com sucesso');
     }
 }
