@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Calendar;
 use App\Models\Sale;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -185,8 +186,31 @@ class SalesController extends BaseController
      * @param  \App\Models\Sales  $sales
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Sales $sales)
+    public function destroy(Sale $sale)
     {
-        //
+        $sale->delete();
+
+        return redirect('/sales');
+    }
+
+    public function callbackWix(Request $request)
+    {
+        $payload = $request->all();
+
+        $arrModel = [
+            'user_id' => 3,
+            'title' => 'Callback do Wix',
+            'description' => json_encode($payload),
+            'type' => 'Ação',
+            'audience' => 'Administradores',
+            'begin_at' => date('Y-m-d H:i:s'),
+            'status' => 'Pendente',
+            'is_active' => false
+        ];
+
+        $model = Calendar::create($arrModel);
+        $model->refresh();
+
+        return response('Model registrado com sucesso');
     }
 }
