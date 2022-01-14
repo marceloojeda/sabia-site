@@ -62,3 +62,11 @@ The Laravel framework is open-sourced software licensed under the [MIT license](
 
 ## Acesso ec2
 sudo ssh -i ojeda_ec2-sabia.pem ubuntu@52.91.174.190
+
+
+Cronograma
+Dados dos coordenadores
+Modificar geração dos tickets para sequencial
+
+* Resp. pelas pendencias do Pix pelo Site: Marcelo com apoio da Marina
+* Ver URL com SSL para apresentar o ranking de vendas p/ o publico
