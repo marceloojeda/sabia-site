@@ -5,6 +5,8 @@ namespace App\Models;
 use App\Models\Traits\DateFormat;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Request;
 
 class Sale extends Model
 {
@@ -27,9 +29,35 @@ class Sale extends Model
 
     protected $dates = ['deleted_at', 'payment_date', 'deleted_at'];
 
-    public function seller()
+    public function vendedor()
     {
         return $this->hasOne(User::class, 'id', 'user_id');
+    }
+
+    public function getSquadSales(Request $request)
+    {
+        $head = $request->user();
+
+        $results = DB::table('sales')
+            ->join('users', 'sales.user_id', 'users.id')
+            ->where('users.head_id', $head->id);
+
+        if ($request->has('trashed')) {
+            $results->withTrashed();
+        }
+
+        if(!empty($request->buyer)) {
+            $results->where('buyer', 'like', '%'.$request->buyer.'%');
+        }
+        if(!empty($request->seller)) {
+            $results->where('seller', 'like', '%'.$request->seller.'%');
+        }
+        $sales = $results
+            ->select(['sales.*'])
+            ->orderByDesc('sales.id')
+            ->paginate();
+
+        return $sales;
     }
 
     public static function checkTicket($number)
@@ -39,10 +67,15 @@ class Sale extends Model
         return empty($sale);
     }
 
-    public static function getGeneratedNumbers()
+    public static function getLastTicket()
     {
-        $tickets = Sale::whereNotNull('ticket_number')->get(['ticket_number']);
+        $ticket = DB::table('sales')->max('ticket_number');
 
-        return $tickets ? $tickets->toArray() : [];
+        if(!$ticket) {
+            return 0;
+        }
+
+        return $ticket;
+
     }
 }

@@ -2,10 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Calendar;
 use App\Models\Sale;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class SalesController extends BaseController
 {
@@ -13,6 +12,8 @@ class SalesController extends BaseController
     public function __construct()
     {
         parent::__construct(true);
+
+        $this->middleware('auth');
     }
 
     private function rulesStore()
@@ -20,7 +21,7 @@ class SalesController extends BaseController
         return [
             'user_id' => 'required|exists:users,id',
             'buyer' => 'required|max:255',
-            'buyer_email' => 'email',
+            'buyer_email' => 'nullable|email',
             'amount' => 'required|numeric',
             'amount_paid' => 'required|numeric',
             'is_ecommerce' => 'required|boolean',
@@ -33,9 +34,17 @@ class SalesController extends BaseController
         return [
             'user_id' => 'required|exists:users,id',
             'buyer' => 'required|max:255',
-            'buyer_email' => 'email',
+            'buyer_email' => 'nullable|email',
             'amount_paid' => 'required|numeric'
         ];
+    }
+
+    private function checkPerfilUsuario(Request $request)
+    {
+        if (!$this->validatePerfil($request->user())) {
+            Auth::logout();
+            return redirect('/home');
+        }
     }
 
     /**
@@ -45,15 +54,20 @@ class SalesController extends BaseController
      */
     public function index(Request $request)
     {
-        $results = DB::table('sales')->where('user_id', env('SELLER_TEST', 3));
-        if ($request->has('trashed')) {
-            $results->withTrashed();
-        }
-        $sales = $results
-            ->orderBy('id', 'desc')
-            ->paginate(15);
+        $this->checkPerfilUsuario($request);
 
-        return view('coordenador.sales_index', compact('sales'));
+        $salesModel = new Sale();
+        $sales = $salesModel->getSquadSales($request);
+
+        $filter = [];
+        if(!empty($request->buyer)) {
+            $filter['buyer'] = $request->buyer;
+        }
+        if(!empty($request->seller)) {
+            $filter['seller'] = $request->seller;
+        }
+
+        return view('coordenador.sales_index', compact('sales', 'filter'));
     }
 
     /**
@@ -61,14 +75,16 @@ class SalesController extends BaseController
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request)
     {
+        $this->checkPerfilUsuario($request);
+
+        $this->arrVendedores = $this->getVendedores($request->user()->id);
+
         $saleObj = new Sale();
 
         $saleData = $saleObj->getFillable();
-        $saleData['user_id'] = 5;
         $saleData['is_ecommerce'] = false;
-        $saleData['seller'] = 'Prof. Domingo Hilpert';
         $saleData['amount'] = 12;
         $saleData['amount_paid'] = 12;
         $saleData['payment_status'] = 'Pago';
@@ -90,47 +106,40 @@ class SalesController extends BaseController
      */
     public function store(Request $request)
     {
+        $this->checkPerfilUsuario($request);
+        
         $request['is_ecommerce'] = strval($request['is_ecommerce']) === "true";
         $this->validate($request, $this->rulesStore());
-
+        
         $saleData = $request->except(['_token']);
         $saleData['seller'] = $this->getVendedor($saleData['user_id'])->name;
-        $this->setTicketNumber($saleData);
+        
+        $bilhetes = $saleData['amount_paid'];
+        $ticket = $this->getTicketNumber($saleData);
+        $sales = [];
+        for ($i = 0; $i < $bilhetes; $i++) {
+            $saleData['amount_paid'] = 12;
+            $saleData['ticket_number'] = $ticket;
+            
+            $obj = Sale::create($saleData);
+            $obj->refresh();
+            $ticket++;
 
-        $obj = Sale::create($saleData);
-        return redirect('/sales');
+            array_push($sales, $obj->toArray());
+        }
+
+        return view('coordenador.sale_ticket', ['sales' => $sales]);
     }
 
-    private function setTicketNumber(&$saleData)
+    private function getTicketNumber($saleData)
     {
+        $number = null;
         if ($saleData['payment_status'] === 'Pago' && empty($saleData['ticket_number'])) {
-            $numberValid = false;
-            while (!$numberValid) {
-                $number = $this->generateTicketNumber();
-                if ($numberValid = Sale::checkTicket($number)) {
-                    $saleData['ticket_number'] = $number;
-                }
+            while (!$number) {
+                $number = Sale::getLastTicket() + 1;
             }
         }
-    }
-
-    private function generateTicketNumber()
-    {
-        $max = env('TICKET_NUMBER_MAX', 2200);
-        $numbersGeral = [];
-        for ($i = 1; $i <= $max; $i++) {
-            array_push($numbersGeral, $i);
-        }
-
-        $generatedNumbers = Sale::getGeneratedNumbers();
-        if(!$generatedNumbers) {
-            $indexRand = array_rand($numbersGeral);
-            return $numbersGeral[$indexRand];
-        }
-
-        $arrDiff = array_diff($numbersGeral, array_column($generatedNumbers, 'ticket_number'));
-        $indexRand = array_rand($arrDiff);
-        return $arrDiff[$indexRand];
+        return $number;
     }
 
     /**
@@ -141,7 +150,9 @@ class SalesController extends BaseController
      */
     public function show(Sale $sale)
     {
-        //
+        $sales = [];
+        array_push($sales, $sale->toArray());
+        return view('coordenador.sale_ticket', ['sales' => $sales ]);
     }
 
     /**
@@ -150,8 +161,12 @@ class SalesController extends BaseController
      * @param  \App\Models\Sales  $sales
      * @return \Illuminate\Http\Response
      */
-    public function edit(Sale $sale)
+    public function edit(Request $request, Sale $sale)
     {
+        $this->checkPerfilUsuario($request);
+
+        $this->arrVendedores = $this->getVendedores($request->user()->id);
+
         return view('coordenador.sale_edit', [
             'sale' => $sale,
             'formasPagamento' => $this->arrFormasPagamento,
@@ -174,9 +189,17 @@ class SalesController extends BaseController
         $saleData = $request->except(['_token']);
         $saleData['seller'] = $this->getVendedor($saleData['user_id'])->name;
         $saleData['payment_status'] = $sale->payment_status;
-        $this->setTicketNumber($saleData);
 
-        $sale->update($saleData);
+        $bilhetes = $saleData['amount_paid'];
+        $ticket = $this->getTicketNumber($saleData);
+        for ($i = 0; $i < $bilhetes; $i++) {
+            $saleData['amount_paid'] = 12;
+            $saleData['ticket_number'] = $ticket;
+
+            $sale->update($saleData);
+            $ticket++;
+        }
+
         return redirect('/sales');
     }
 
@@ -191,26 +214,5 @@ class SalesController extends BaseController
         $sale->delete();
 
         return redirect('/sales');
-    }
-
-    public function callbackWix(Request $request)
-    {
-        $payload = $request->all();
-
-        $arrModel = [
-            'user_id' => 3,
-            'title' => 'Callback do Wix',
-            'description' => json_encode($payload),
-            'type' => 'Ação',
-            'audience' => 'Administradores',
-            'begin_at' => date('Y-m-d H:i:s'),
-            'status' => 'Pendente',
-            'is_active' => false
-        ];
-
-        $model = Calendar::create($arrModel);
-        $model->refresh();
-
-        return response('Model registrado com sucesso');
     }
 }
