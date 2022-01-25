@@ -26,7 +26,9 @@ class SaleSeeder extends Seeder
 
     private static function getUsers()
     {
-        $users = DB::table('users')->get(['id', 'name']);
+        $users = DB::table('users')
+            ->where('type', 'Vendedor')
+            ->get(['id', 'name']);
         return $users->toArray();
     }
 }

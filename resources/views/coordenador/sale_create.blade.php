@@ -24,15 +24,23 @@
                     </div>
                     <div class="col-sm-6 form-group">
                         <label for="buyer_email">Email comprador</label>
-                        <input class="form-control" type="text" name="buyer_email" id="buyer_email">
+                        <input class="form-control" type="email" name="buyer_email" id="buyer_email">
                     </div>
                     <div class="col-sm-3 form-group">
                         <label for="buyer_phone">Telefone comprador</label>
-                        <input class="form-control" type="text" name="buyer_phone" id="buyer_phone">
+                        <input class="form-control" type="text" name="buyer_phone" id="buyer_phone"  onkeypress="mask(this, mphone);" onblur="mask(this, mphone);">
                     </div>
                     <div class="col-sm-3 form-group">
-                        <label for="amount_paid">Valor pago</label>
-                        <input class="form-control" type="text" name="amount_paid" id="amount_paid">
+                        <label for="amount_paid">Bilhetes</label>
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <button class="btn btn-outline-secondary" type="button" id="button-addon1" onclick="setBilhetes(false);">-</button>
+                            </div>
+                            <input class="form-control text-center" type="text" name="amount_paid" id="amount_paid" value="1" readonly>
+                            <div class="input-group-append">
+                                <button class="btn btn-outline-secondary" type="button" id="button-addon1" onclick="setBilhetes();">+</button>
+                            </div>
+                        </div>
                     </div>
                     <div class="col-sm-3 form-group">
                         <label for="payment_method">Forma pagto</label>
@@ -45,7 +53,7 @@
                         <label for="user_id">Vendedor</label>
                         <select class="form-control" name="user_id" id="user_id">
                             @foreach($vendedores as $vendedor)
-                            <option {{ $vendedor->id == $saleData['user_id'] ? 'selected' : '' }} value="{{ $vendedor->id }}">{{ $vendedor->name }}</option>
+                            <option value="{{ $vendedor->id }}">{{ $vendedor->name }}</option>
                             @endforeach
                         </select>
                     </div>

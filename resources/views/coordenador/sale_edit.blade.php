@@ -21,15 +21,15 @@
                     </div>
                     <div class="col-sm-6 form-group">
                         <label for="buyer_email">Email comprador</label>
-                        <input class="form-control" type="text" name="buyer_email" id="buyer_email" value="{{ $sale->buyer_email }}">
+                        <input class="form-control" type="email" name="buyer_email" id="buyer_email" value="{{ $sale->buyer_email }}">
                     </div>
                     <div class="col-sm-3 form-group">
                         <label for="buyer_phone">Telefone comprador</label>
-                        <input class="form-control" type="text" name="buyer_phone" id="buyer_phone" value="{{ $sale->buyer_phone }}">
+                        <input class="form-control" type="text" name="buyer_phone" id="buyer_phone" value="{{ $sale->buyer_phone }}" onkeypress="mask(this, mphone);" onblur="mask(this, mphone);">
                     </div>
                     <div class="col-sm-3 form-group">
                         <label for="amount_paid">Valor pago</label>
-                        <input class="form-control" type="text" name="amount_paid" id="amount_paid" value="{{ $sale->amount_paid }}">
+                        <input class="form-control" type="text" name="amount_paid" id="amount_paid" value="{{ $sale->amount_paid }}" readonly>                        
                     </div>
                     <div class="col-sm-3 form-group">
                         <label for="payment_method">Forma pagto</label>
@@ -52,10 +52,15 @@
             </div>
             <div class="card-footer">
                 <div class="row">
-                    <div class="col-sm-6">
+                    <div class="col-sm-4">
                         <a href="/sales" class="btn btn-secondary">Voltar</a>
                     </div>
-                    <div class="col-sm-6">
+                    <div class="col-sm-4 text-center">
+                        @if(!empty($sale->ticket_number))
+                        <a href="/sales/{{ $sale->id }}" class="btn btn-warning">Ticket</a>
+                        @endif
+                    </div>
+                    <div class="col-sm-4">
                         <button type="submit" class="btn btn-primary float-right">Salvar</button>
                     </div>
                 </div>

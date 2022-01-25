@@ -7,6 +7,13 @@ use Illuminate\Http\Request;
 
 class CalendarController extends Controller
 {
+    public function __construct()
+    {
+        parent::__construct(true);
+
+        $this->middleware('auth');
+    }
+
     /**
      * Display a listing of the resource.
      *

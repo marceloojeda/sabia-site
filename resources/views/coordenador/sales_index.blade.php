@@ -5,6 +5,32 @@
 
 @section('content')
 
+<div class="col-sm-12">
+    <form action="/sales/filtered" method="POST">
+        <div class="row">
+
+            @csrf
+            <div class="col-sm-5 form-group">
+                <label for="">Comprador</label>
+                <input type="text" class="form-control" name="buyer" id="buyer" value="{{ $filter['buyer'] ?? '' }}">
+            </div>
+    
+            <div class="col-sm-5 form-group">
+                <label for="">Vendedor</label>
+                <input type="text" class="form-control" name="seller" id="seller" value="{{ $filter['seller'] ?? '' }}">
+            </div>
+
+            <div class="col-sm-2 form-group">
+                <label for="" class="text-white">Filtro</label>
+                <button type="submit" class="btn btn-info form-control">Filtrar</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+
+
+
 <table class="table table-striped">
     <thead>
         <tr>

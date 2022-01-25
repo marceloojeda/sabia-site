@@ -12,6 +12,8 @@ class VerifyCsrfToken extends Middleware
      * @var array
      */
     protected $except = [
-        //
+        'myzap/start',
+        'myzap/qrcode/*',
+        'myzap/send-ticket/*'
     ];
 }

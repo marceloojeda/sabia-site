@@ -15,22 +15,38 @@ class UserSeeder extends Seeder
      */
     public function run()
     {
-        $users = factory(User::class, 10)->make();
+        $adms = $this->createAdministradores();
+        $heads = $this->createCoordenadores();
+
+        $users = factory(User::class, 50)->make(['type' => 'Vendedor']);
         $nAdm = 0;
         $nCoo = 0;
         foreach ($users as $user) {
-            if($user->type === 'Administrador' && $nAdm >= 2) {
-                $user->type = 'Vendedor';
-            }
-            if($user->type === 'Coordenador' && $nCoo >= 3) {
-                $user->type = 'Vendedor';
-            }
-
-            $nAdm = $user->type === 'Administrador' ? $nAdm + 1 : 0;
-            $nCoo = $user->type === 'Coordenador' ? $nCoo + 1 : 0;
-
-
+            $headRand = array_rand($heads);
+            $user->head_id = $heads[$headRand]['id'];
             User::create($user->makeVisible(['password', 'remember_token'])->toArray());
         }
+    }
+
+    private function createAdministradores()
+    {
+        $users = factory(User::class, 4)
+            ->create([
+                'type' => 'Administrador'
+            ])
+            ->makeVisible(['password', 'remember_token']);
+
+        return $users->toArray();
+    }
+
+    private function createCoordenadores()
+    {
+        $users = factory(User::class, 10)
+            ->create([
+                'type' => 'Coordenador'
+            ])
+            ->makeVisible(['password', 'remember_token']);
+
+        return $users->toArray();
     }
 }
