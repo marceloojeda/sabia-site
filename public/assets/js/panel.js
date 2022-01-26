@@ -25,10 +25,26 @@ function setBilhetes(soma = true) {
 }
 
 async function sendTicket(saleId) {
+    const file = await exportBillet(saleId);
     document.getElementById('btnSendTicket').setAttribute('disabled', true);
     $.get(apiUrl + "/myzap/send-ticket/" + saleId + '?session=' + myzapSession, function (data, status) {
         document.getElementById('btnSendTicket').removeAttribute('disabled');
     });
+}
+
+function exportBillet(saleId) {
+    let file = '';
+    htmlToImage.toPng(document.getElementById(saleId))
+        .then(function (dataUrl) {
+            $.post(apiUrl + '/myzap/store-billet', {img: dataUrl, saleId: saleId})
+            .done((result) => {
+                file = result.file;
+            }).fail((err) => {
+                alert(err.responseText)
+            })
+        });
+
+    return file;
 }
 
 async function initMyzap(event) {

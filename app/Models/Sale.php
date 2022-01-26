@@ -24,7 +24,8 @@ class Sale extends Model
         'buyer_phone',
         'ticket_number',
         'payment_status',
-        'payment_date'
+        'payment_date',
+        'billet_file'
     ];
 
     protected $dates = ['deleted_at', 'payment_date', 'deleted_at'];

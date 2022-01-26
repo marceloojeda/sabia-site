@@ -14,6 +14,7 @@ class VerifyCsrfToken extends Middleware
     protected $except = [
         'myzap/start',
         'myzap/qrcode/*',
-        'myzap/send-ticket/*'
+        'myzap/send-ticket/*',
+        'myzap/store-billet'
     ];
 }
