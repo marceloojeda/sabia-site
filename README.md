@@ -70,3 +70,10 @@ Modificar geração dos tickets para sequencial
 
 * Resp. pelas pendencias do Pix pelo Site: Marcelo com apoio da Marina
 * Ver URL com SSL para apresentar o ranking de vendas p/ o publico
+
+
+Cards numeros e porcentuais
+
+Total bilhetes promoção
+Total equipe
+Total semana
