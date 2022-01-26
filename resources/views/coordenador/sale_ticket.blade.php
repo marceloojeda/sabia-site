@@ -25,26 +25,33 @@
     <div class="d-none justify-content-center mt-5" id="ticket-box">
         @foreach ($sales as $sale)
         <div class="card m-3">
-            <!-- <img src="/assets/img/bilhete_2.png" class="card-img-top"> -->
-            <div class="bilhete-box-item" id="{{ $sale['id'] }}">
+
+            @if(empty($sale['billet_file']))
+            <div class="bilhete-box-item card-img-top" id="{{ $sale['id'] }}">
                 <div class="d-flex align-items-end" style="height: 100%;">
                     <label class="ticket-number">{{ $sale['ticket_number'] }}</label>
                 </div>
             </div>
+            @else
+            <img src="/assets/img/billets/{{$sale['billet_file']}}" class="card-img-top">
+            @endif
+
             <div class="card-body">
                 <h5 class="card-title">{{ $sale['buyer'] }}</h5>
                 <p class="card-text">
                     Fone: {{ $sale['buyer_phone'] }} <br />
                     E-mail: {{ $sale['buyer_email'] }}
                 </p>
+                @if(empty($sale['billet_file']))
                 <button id="btnSendTicket" type="button" class="btn btn-primary" onclick="sendTicket({{ $sale['id'] }})">Enviar Bilhete</button>
+                @else
+                <button id="btnSendTicket" type="button" class="btn btn-primary" onclick="sendTicket({{ $sale['id'] }}, false)">Enviar Bilhete</button>
+                @endif
             </div>
         </div>
         @endforeach
     </div>
 </div>
-
-
 
 <input type="hidden" name="myzap-state" id="myzap-state" value="">
 <input type="hidden" name="myzap-status" id="myzap-status" value="">

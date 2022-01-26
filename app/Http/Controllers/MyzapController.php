@@ -146,14 +146,14 @@ class MyzapController extends BaseController
 
         $jsonResp = Http::withHeaders($headers)->post($serverhost, $body);
 
-        if($jsonResp->status() != 200) {
-            var_dump([
-                'host' => $serverhost,
-                'headers' => $headers,
-                'body' => $body
-            ]);
-            dd($jsonResp->body());
-        }
+        // if($jsonResp->status() != 200) {
+        //     var_dump([
+        //         'host' => $serverhost,
+        //         'headers' => $headers,
+        //         'body' => $body
+        //     ]);
+        //     dd($jsonResp->body());
+        // }
 
         return $jsonResp->status() == 200;
     }
