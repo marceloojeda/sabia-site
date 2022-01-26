@@ -4,7 +4,7 @@ let myzapStatus = '';
 let myzapQrcode = false;
 let checkState = 'stop';
 
-const apiUrl = 'http://localhost:8000';
+const apiUrl = 'http://52.91.174.190';
 
 function setBilhetes(soma = true) {
     atual = parseInt($('#amount_paid').val());
