@@ -40,7 +40,7 @@ class MyzapController extends BaseController
                 'Content-Type' => 'application/json',
                 'apitoken' => $token,
                 "sessionkey" => env('MYZAP_SESSION_KEY')
-                
+
             ];
             $body = [
                 "session" => $session,
@@ -103,14 +103,15 @@ class MyzapController extends BaseController
                     break;
 
                 case 2:
-                    $message = env('APP_URL') . '/assets/img/bilhete_2.png';
+                    $message = env('APP_URL') . '/assets/img/billets/' . $sale->billet_file;
                     break;
 
                 default:
                     $message = '';
                     break;
             }
-            if (!$this->sendText($session, $sellerPhone, $message)) {
+            
+            if (!$this->sendText($session, $sellerPhone, $message, $i === 2)) {
                 throw new Exception("Falha ao enviar mensagem no whatsapp");
             }
         }
@@ -118,20 +119,65 @@ class MyzapController extends BaseController
         return response("Mensagem enviada com sucesso");
     }
 
-    private function sendText($session, $sellerPhone, $message)
+    private function sendText($session, $sellerPhone, $message, $isFile = false)
     {
-        $serverhost = env('MYZAP_URL') . '/sendText';
+        $serverhost = env('MYZAP_URL');
+        if($isFile) {
+            $serverhost .= '/sendImage';
+        } else {
+            $serverhost .= '/sendText';
+        }
+
         $headers = [
             "sessionkey" => env('MYZAP_SESSION_KEY'),
             'Content-Type' => 'application/json'
         ];
+
         $body = [
-            "session" => $session,
+            'session' => $session,
             'number' => '+55' . $sellerPhone,
             'text' => $message
         ];
+
+        if($isFile) {
+            unset($body['text']);
+            $body['path'] = $message;
+        }
+
         $jsonResp = Http::withHeaders($headers)->post($serverhost, $body);
 
+        // if($jsonResp->status() != 200) {
+        //     var_dump([
+        //         'host' => $serverhost,
+        //         'headers' => $headers,
+        //         'body' => $body
+        //     ]);
+        //     dd($jsonResp->body());
+        // }
+
         return $jsonResp->status() == 200;
+    }
+
+    public function storeBillet(Request $request)
+    {
+        $filename = uniqid() . '.png';
+        $img = $request->img;
+        $img = str_replace('data:image/png;base64,', '', $img);
+        $img = str_replace(' ', '+', $img);
+        $data = base64_decode($img);
+        $file = env('MYZAP_IMG_DIR') . $filename;
+        $success = file_put_contents($file, $data);
+
+        if(!$success) {
+            throw new Exception("Nao foi possivel gerar a imagem do bilhete.");
+        }
+        
+        $sale = Sale::where('id', $request->saleId)->firstOrFail();
+        $sale->billet_file = $filename;
+        $sale->update();
+
+        return response()->json([
+            'file' => $file
+        ]);
     }
 }

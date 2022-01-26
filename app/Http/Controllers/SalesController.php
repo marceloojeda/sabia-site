@@ -150,8 +150,13 @@ class SalesController extends BaseController
      */
     public function show(Sale $sale)
     {
+        $arrSale = $sale->toArray();
+        if(!empty($sale->ticket_number)) {
+            $arrSale['ticket_number'] = str_pad(strval($sale->ticket_number), 4, '0', STR_PAD_LEFT);
+        }
+
         $sales = [];
-        array_push($sales, $sale->toArray());
+        array_push($sales, $arrSale);
         return view('coordenador.sale_ticket', ['sales' => $sales ]);
     }
 

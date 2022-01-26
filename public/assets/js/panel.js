@@ -24,11 +24,32 @@ function setBilhetes(soma = true) {
     input.value = atual;
 }
 
-async function sendTicket(saleId) {
+async function sendTicket(saleId, geraImage = true) {
+
     document.getElementById('btnSendTicket').setAttribute('disabled', true);
-    $.get(apiUrl + "/myzap/send-ticket/" + saleId + '?session=' + myzapSession, function (data, status) {
-        document.getElementById('btnSendTicket').removeAttribute('disabled');
-    });
+
+    if (geraImage) {
+        exportBillet(saleId);
+    } else {
+        $.get(apiUrl + "/myzap/send-ticket/" + saleId + '?session=' + myzapSession, function (data, status) {
+            document.getElementById('btnSendTicket').removeAttribute('disabled');
+        });
+    }
+}
+
+async function exportBillet(saleId) {
+    let file = '';
+    htmlToImage.toPng(document.getElementById(saleId))
+        .then(function (dataUrl) {
+            $.post(apiUrl + '/myzap/store-billet', { img: dataUrl, saleId: saleId })
+                .done((result) => {
+                    $.get(apiUrl + "/myzap/send-ticket/" + saleId + '?session=' + myzapSession, function (data, status) {
+                        document.getElementById('btnSendTicket').removeAttribute('disabled');
+                    });
+                }).fail((err) => {
+                    alert(err.responseText)
+                })
+        });
 }
 
 async function initMyzap(event) {
@@ -67,7 +88,7 @@ function startMyzap() {
             myzapSession = hiddenSession.value;
             myzapState = hiddenState.value;
             myzapStatus = hiddenStatus.value;
-            
+
             checkState = 'stop';
         })
         .then(() => {
@@ -100,15 +121,15 @@ function qrcodeMyzap(session) {
 
     // tenta carregar o QR Code
     let timerQrcodeMyzap = setInterval(() => {
-        if(checkState == 'stop') {
+        if (checkState == 'stop') {
             checkState = 'running';
             qrcodeMyzapAsync(session).then((qrcodeResult) => {
                 hiddenState.value = qrcodeResult.state;
                 hiddenStatus.value = qrcodeResult.status;
-    
+
                 if (qrcodeResult.result == 'success' && qrcodeResult.state == 'QRCODE' && qrcodeResult.status == 'notLogged') {
                     clearInterval(timerQrcodeMyzap);
-    
+
                     showQrcode(startResult);
                 }
 
