@@ -39,11 +39,11 @@ class MyzapController extends BaseController
             $headers = [
                 'Content-Type' => 'application/json',
                 'apitoken' => $token,
+                "sessionkey" => env('MYZAP_SESSION_KEY')
                 
             ];
             $body = [
                 "session" => $session,
-                "sessionkey" => env('MYZAP_SESSION_KEY')
             ];
             $jsonResp = Http::withHeaders($headers)->post($serverhost, $body);
 
