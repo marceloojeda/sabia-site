@@ -31,24 +31,35 @@ async function sendTicket(saleId, geraImage = true) {
     if (geraImage) {
         exportBillet(saleId);
     } else {
-        $.get(apiUrl + "/myzap/send-ticket/" + saleId + '?session=' + myzapSession, function (data, status) {
-            document.getElementById('btnSendTicket').removeAttribute('disabled');
-        });
+        
+        $.get(apiUrl + "/myzap/send-ticket/" + saleId + '?session=' + myzapSession)
+            .fail((jqXHR, textStatus, errorThrown) => {
+                setMyzapAlert(jqXHR.responseText);
+            }).done((data) => {
+                setMyzapAlert('');
+                alert('Bilhete enviado!');
+            });
     }
 }
 
 async function exportBillet(saleId) {
-    let file = '';
     htmlToImage.toPng(document.getElementById(saleId))
         .then(function (dataUrl) {
             $.post(apiUrl + '/myzap/store-billet', { img: dataUrl, saleId: saleId })
                 .done((result) => {
-                    $.get(apiUrl + "/myzap/send-ticket/" + saleId + '?session=' + myzapSession, function (data, status) {
-                        document.getElementById('btnSendTicket').removeAttribute('disabled');
-                    });
+                    $.get(apiUrl + "/myzap/send-ticket/" + saleId + '?session=' + myzapSession)
+                        .fail((jqXHR, textStatus, errorThrown) => {
+                            setMyzapAlert(jqXHR.responseText);
+                        }).done((data) => {
+                            setMyzapAlert('');
+                            alert('Bilhete enviado!');
+                        });
                 }).fail((err) => {
-                    alert(err.responseText)
-                })
+                    setMyzapAlert("Opss.. algo errado que não tá certo.<br />" + err.responseText);
+                });
+        })
+        .fail((err) => {
+            setMyzapAlert("Opss.. algo errado que não tá certo.<br />" + err.responseText);
         });
 }
 
@@ -180,4 +191,19 @@ function checkStatus() {
     }
 
     return false;
+}
+
+function setMyzapAlert(message) {
+    const label = document.getElementById('lblMyzapAlert');
+    const div = document.getElementById('myzap-alert');
+    label.innerText = message;
+    
+    if(message == '' || message == undefined) {
+        div.classList.add('d-none');
+        document.getElementById('btnSendTicket').removeAttribute('disabled');
+        return;
+    }
+    
+    div.classList.remove('d-none');
+    document.getElementById('btnSendTicket').removeAttribute('disabled');
 }
