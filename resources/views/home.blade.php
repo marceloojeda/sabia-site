@@ -1,5 +1,8 @@
 @extends('coordenador_layout')
 
+<script type="text/javascript" src="/assets/js/chart.min.js"></script>
+<script type="text/javascript" src="/assets/js/head_home.js"></script>
+
 @section('content')
 <div class="container">
 
@@ -18,10 +21,10 @@
         <div class="col-sm-3">
             <div class="card">
                 <div class="card-header bg-primary">
-                    <h4 class="card-title text-white">Total de bilhetes</h4>
+                    <h4 class="card-title text-white">Total da promoção</h4>
                 </div>
                 <div class="card-body bg-primary text-center">
-                    <h3 class="text-white text-decoration-bold">123</h3>
+                    <h3 class="text-white text-decoration-bold">600 <small>27,7%</small></h3>
                 </div>
             </div>
         </div>
@@ -29,10 +32,10 @@
         <div class="col-sm-3">
             <div class="card">
                 <div class="card-header bg-warning">
-                    <h4 class="card-title text-dark">Total de bilhetes</h4>
+                    <h4 class="card-title text-dark">Total da equipe</h4>
                 </div>
                 <div class="card-body bg-warning text-center">
-                    <h3 class="text-dark text-decoration-bold">123</h3>
+                    <h3 class="text-dark text-decoration-bold">125 <small>5,8%</small></h3>
                 </div>
             </div>
         </div>
@@ -40,10 +43,10 @@
         <div class="col-sm-3">
             <div class="card">
                 <div class="card-header bg-info">
-                    <h4 class="card-title text-white">Total de bilhetes</h4>
+                    <h4 class="card-title text-white">Meta da semana</h4>
                 </div>
                 <div class="card-body bg-info text-center">
-                    <h3 class="text-white text-decoration-bold">123</h3>
+                    <h3 class="text-white text-decoration-bold">200 <small>9,2%</small></h3>
                 </div>
             </div>
         </div>
@@ -51,31 +54,31 @@
         <div class="col-sm-3">
             <div class="card">
                 <div class="card-header bg-danger">
-                    <h4 class="card-title text-white">Total de bilhetes</h4>
+                    <h4 class="card-title text-white">Total da semana</h4>
                 </div>
                 <div class="card-body bg-danger text-center">
-                    <h3 class="text-white text-decoration-bold">123</h3>
+                    <h3 class="text-white text-decoration-bold">225 <small>112,5%</small></h3>
                 </div>
             </div>
         </div>
     </div>
 
     <div class="row mt-4">
-        <div class="col-sm-6">
+        <div class="col-sm-12">
             <div class="card text-center">
                 <div class="card-header">
-                    Meta Semanal
+                    Comparativo com a semana passada
                 </div>
                 <div class="card-body">
-                    <img src="assets/img/meta-semana-chart.png" class="img-fluid" alt="...">
+                    <canvas id="chBar"></canvas>
                 </div>
                 <div class="card-footer text-muted">
-                    alguma observação
+                    houve uma melhora nas vendas \o/
                 </div>
             </div>
         </div>
 
-        <div class="col-sm-6">
+        <!-- <div class="col-sm-6">
             <div class="card text-center">
                 <div class="card-header">
                     Meta Promoção
@@ -87,9 +90,9 @@
                     alguma observação
                 </div>
             </div>
-        </div>
+        </div> -->
     </div>
-    
+
     @if (!empty($headAlert['pending-sales']) && $headAlert['pending-sales']['total'])
     <div class="row">
 
