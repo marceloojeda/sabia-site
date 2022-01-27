@@ -10,6 +10,8 @@
 
 <div class="col-sm-12">
     <h2 class="d-block text-center mt-4">Tickets gerados com sucesso!</h2>
+
+    <!-- Conexao com o whatsapp -->
     <div class="text-center mt-3" id="myzap-box">
         <span card="card-title">
             Whatsapp Status: <b><label id="myzap-status">Desconectado</label></b>
@@ -21,7 +23,7 @@
         </div>
     </div>
 
-    <!-- <div class="d-flex justify-content-center mt-5" id="tickets"> -->
+    <!-- Tickets Boxes -->
     <div class="d-none justify-content-center mt-5" id="ticket-box">
         @foreach ($sales as $sale)
         <div class="card m-3">
@@ -47,6 +49,12 @@
                 @else
                 <button id="btnSendTicket" type="button" class="btn btn-primary" onclick="sendTicket({{ $sale['id'] }}, false)">Enviar Bilhete</button>
                 @endif
+            </div>
+
+            <div class="card-footer d-none" id="myzap-alert">
+                <div class="alert alert-danger">
+                    <label id="lblMyzapAlert"></label>
+                </div>
             </div>
         </div>
         @endforeach

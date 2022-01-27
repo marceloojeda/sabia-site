@@ -112,7 +112,7 @@ class MyzapController extends BaseController
             }
             
             if (!$this->sendText($session, $sellerPhone, $message, $i === 2)) {
-                throw new Exception("Falha ao enviar mensagem no whatsapp");
+                return response("Falha ao enviar mensagem no whatsapp", 500);
             }
         }
 

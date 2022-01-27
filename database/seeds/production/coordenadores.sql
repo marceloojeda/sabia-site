@@ -27,4 +27,5 @@ update users set phone = '(34) 9170-9070' where id = 8;
 update users set phone = '(34) 9804-0505' where id = 9;
 update users set phone = '(34) 9936-3060' where id = 10;
 update users set phone = '(34) 9281-0581' where id = 11;
+update users set phone = '(34) 9879-9329', type = 'Coordenador' where id = 20;
 
