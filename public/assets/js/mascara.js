@@ -21,3 +21,21 @@ function mphone(v) {
     }
     return r;
 }
+
+function setBilhetes(soma = true) {
+    atual = parseInt($('#amount_paid').val());
+    const input = document.getElementById('amount_paid');
+    if (soma) {
+        atual = atual + 1;
+        input.value = atual;
+        return;
+    }
+
+    if (atual <= 1) {
+        atual = 1;
+    } else {
+        atual = atual - 1;
+    }
+
+    input.value = atual;
+}
