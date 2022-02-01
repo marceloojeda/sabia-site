@@ -40,6 +40,7 @@ async function startMyzapAsync(close) {
 
 function sendBillets() {
     const billets = [...document.querySelectorAll('.check-myzap:checked')].map(e => {
+        document.getElementById('btnSendTicket').setAttribute('disabled', true);
         const ticket = document.getElementById('ticket-' + e.value);
         if(ticket.getAttribute('data-hasfile') == 'false') {
             exportBillet(e.value);
@@ -48,13 +49,11 @@ function sendBillets() {
                 .fail((jqXHR, textStatus, errorThrown) => {
                     // setMyzapAlert(jqXHR.responseText);
                 }).done((data) => {
-                    // setMyzapAlert('');
+                    setMyzapAlert('');
                     // alert('Bilhete enviado!');
                 });
         }
     });
-
-    alert('Bilhetes enviados!');
 }
 
 function exportBillet(saleId) {
