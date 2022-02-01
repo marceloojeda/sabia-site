@@ -148,8 +148,10 @@ class SalesController extends BaseController
      * @param  \App\Models\Sales  $sales
      * @return \Illuminate\Http\Response
      */
-    public function show(Sale $sale)
+    public function show(Request $request, Sale $sale)
     {
+        $this->checkPerfilUsuario($request);
+
         $arrSale = $sale->toArray();
         if(!empty($sale->ticket_number)) {
             $arrSale['ticket_number'] = str_pad(strval($sale->ticket_number), 4, '0', STR_PAD_LEFT);
@@ -157,7 +159,12 @@ class SalesController extends BaseController
 
         $sales = [];
         array_push($sales, $arrSale);
-        return view('coordenador.sale_ticket', ['sales' => $sales ]);
+
+        $head = $request->user();
+        $headPhone = $head->phone;
+        $headPhone = preg_replace("/[^0-9]/", "", $headPhone);
+
+        return view('coordenador.sale_ticket', ['sales' => $sales, 'session' => $headPhone ]);
     }
 
     /**
