@@ -64,7 +64,7 @@ function exportBillet(saleId) {
                     .fail((jqXHR, textStatus, errorThrown) => {
                         // setMyzapAlert(jqXHR.responseText);
                     }).done((data) => {
-                        // setMyzapAlert('');
+                        setMyzapAlert('');
                         // alert('Bilhete enviado!');
                     });
             }).fail((err) => {
