@@ -34,6 +34,10 @@ class MyzapController extends BaseController
             $user = $request->user();
             $session = $this->getUserPhone($user);
 
+            if(!empty($request->input('close')) && $request->input('close') == 'true') {
+                $this->closeSession($session);
+            }
+
             $serverhost = env('MYZAP_URL') . '/start';
             $token = env('MYZAP_TOKEN');
             $headers = [
@@ -51,26 +55,27 @@ class MyzapController extends BaseController
 
             return response()->json($result);
 
-            // $body = [
-            //     "serverhost" => env('MYZAP_URL'),
-            //     "sessionkey" => env('MYZAP_SESSION_KEY'),
-            //     "apitoken" => env('MYZAP_TOKEN'),
-            //     "session" => $session,
-            // ];
-
-            // $json = ApiBrasil::WhatsAppService('start', $body);
-            // $result = json_decode($json, true);
-
-            // return response()->json($result);
         } catch (\Exception $e) {
-            dd($e->getMessage());
+            return response($e->getMessage(), 500);
         }
     }
 
-    function getUserPhone($user)
+    private function getUserPhone($user)
     {
         $phone = preg_replace("/[^0-9]/", "", $user->phone);
         return strval($phone);
+    }
+
+    private function closeSession($session) {
+        $serverhost = env('MYZAP_URL') . '/logout';
+        $headers = [
+            "sessionkey" => env('MYZAP_SESSION_KEY'),
+            'Content-Type' => 'application/json'
+        ];
+
+        $response = Http::withHeaders($headers)->post($serverhost, ['session' => $session]);
+
+        return $response->body();
     }
 
     public function getQrCode($session)
@@ -103,7 +108,11 @@ class MyzapController extends BaseController
                     break;
 
                 case 2:
-                    $message = env('APP_URL') . '/assets/img/billets/' . $sale->billet_file;
+                    if(env('APP_ENV') == 'local') {
+                        $message = env('MYZAP_IMG_DIR') . $sale->billet_file;    
+                    } else {
+                        $message = env('APP_URL') . '/assets/img/billets/' . $sale->billet_file;
+                    }
                     break;
 
                 default:
