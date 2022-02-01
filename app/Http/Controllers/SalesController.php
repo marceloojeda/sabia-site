@@ -125,10 +125,17 @@ class SalesController extends BaseController
             $obj->refresh();
             $ticket++;
 
-            array_push($sales, $obj->toArray());
+            $arrSale = $obj->toArray();
+            $arrSale['ticket_number'] = str_pad(strval($obj->ticket_number), 4, '0', STR_PAD_LEFT);
+
+            array_push($sales, $arrSale);
         }
 
-        return view('coordenador.sale_ticket', ['sales' => $sales]);
+        $head = $request->user();
+        $headPhone = $head->phone;
+        $headPhone = preg_replace("/[^0-9]/", "", $headPhone);
+
+        return view('coordenador.sale_ticket', ['sales' => $sales, 'session' => $headPhone]);
     }
 
     private function getTicketNumber($saleData)
