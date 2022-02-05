@@ -1,12 +1,7 @@
-@extends('coordenador_layout')
+@extends('layouts.head')
 
 @section('title', 'Vendas')
 @section('page_title', 'Registro de venda')
-
-<script type="text/javascript" src="/assets/js/html-to-image.js"></script>
-<script type="text/javascript" src="/assets/js/html-to-image.js.map"></script>
-
-<script type="text/javascript" src="/assets/js/billet.js"></script>
 
 <script>
     const myzapUrl = "{{ env('MYZAP_URL') }}";
@@ -19,7 +14,7 @@
 @section('content')
 
 <div class="col-sm-12 d-flex justify-content-center m-2">
-    <button class="btn btn-lg btn-primary" type="button" onclick="initMyzap_()">Enviar Ticket(s)</button>
+    <button class="btn btn-lg btn-primary" type="button" onclick="initMyzap()">Enviar Ticket(s)</button>
 </div>
 
     @for ($i = 0; $i < sizeof($sales); $i++) 

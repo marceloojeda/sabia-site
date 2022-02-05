@@ -1,13 +1,13 @@
-function mask(o, f) {
+window.mask = function (o, f) {
     setTimeout(function () {
-        var v = mphone(o.value);
+        var v = f(o.value);
         if (v != o.value) {
             o.value = v;
         }
     }, 1);
 }
 
-function mphone(v) {
+window.mphone = function (v) {
     var r = v.replace(/\D/g, "");
     r = r.replace(/^0/, "");
     if (r.length > 10) {
@@ -22,7 +22,14 @@ function mphone(v) {
     return r;
 }
 
-function setBilhetes(soma = true) {
+window.mdate = function (v) {
+    if (v.length == 2 || v.length == 5) {
+        return v + '/';
+    }
+    return date;
+}
+
+window.setBilhetes = function (soma = true) {
     atual = parseInt($('#amount_paid').val());
     const input = document.getElementById('amount_paid');
     if (soma) {

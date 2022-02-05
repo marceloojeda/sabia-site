@@ -1,10 +1,10 @@
-function initMyzap_() {
+window.initMyzap = function () {
     $('#myzapModal').modal('show');
 
     startMyzap();
 }
 
-function startMyzap() {
+window.startMyzap = function () {
     let close = true;
     let startMyzapTimer = setInterval(() => {
         startMyzapAsync(close).then((data) => {
@@ -29,7 +29,7 @@ function startMyzap() {
     }, 1000 * 120)
 }
 
-async function startMyzapAsync(close) {
+window.startMyzapAsync = async function (close) {
     let startResult = null;
     await $.get(apiUrl + "/myzap/start?close=" + close, function (data, status) {
         startResult = data;
@@ -38,11 +38,11 @@ async function startMyzapAsync(close) {
     return startResult;
 }
 
-function sendBillets() {
+window.sendBillets = function () {
     const billets = [...document.querySelectorAll('.check-myzap:checked')].map(e => {
         document.getElementById('btnSendTicket').setAttribute('disabled', true);
         const ticket = document.getElementById('ticket-' + e.value);
-        if(ticket.getAttribute('data-hasfile') == 'false') {
+        if (ticket.getAttribute('data-hasfile') == 'false') {
             exportBillet(e.value);
         } else {
             $.get(apiUrl + "/myzap/send-ticket/" + e.value + '?session=' + myzapSession)
@@ -56,7 +56,7 @@ function sendBillets() {
     });
 }
 
-function exportBillet(saleId) {
+window.exportBillet = function (saleId) {
     htmlToImage.toPng(document.getElementById('ticket-' + saleId))
         .then(function (dataUrl) {
             $.post(apiUrl + '/myzap/store-billet', { img: dataUrl, saleId: saleId }).done((result) => {
@@ -73,17 +73,17 @@ function exportBillet(saleId) {
         });
 }
 
-function setMyzapAlert(message) {
+window.setMyzapAlert = function (message) {
     const label = document.getElementById('lblMyzapAlert');
     const div = document.getElementById('myzap-alert');
     label.innerText = message;
-    
-    if(message == '' || message == undefined) {
+
+    if (message == '' || message == undefined) {
         div.classList.add('d-none');
         document.getElementById('btnSendTicket').removeAttribute('disabled');
         return;
     }
-    
+
     div.classList.remove('d-none');
     document.getElementById('btnSendTicket').removeAttribute('disabled');
 }

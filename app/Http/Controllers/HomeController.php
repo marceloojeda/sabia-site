@@ -40,6 +40,10 @@ class HomeController extends BaseController
             ]
         ];
 
+        if($request->user()->type == 'Administrador') {
+            return view('adm.home', ['headAlert' => $headAlert]);
+        }
+
         return view('home', ['headAlert' => $headAlert]);
     }
 

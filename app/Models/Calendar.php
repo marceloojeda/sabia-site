@@ -20,6 +20,9 @@ class Calendar extends Model
         'begin_at',
         'finish_at',
         'status',
+        'billets_old',
+        'billets_actual',
+        'billets_goal',
         'is_active'
     ];
 
