@@ -47,7 +47,8 @@ class CalendarsController extends BaseController
         if ($request->has('trashed')) {
             $query->withTrashed();
         }
-        $query->orderByDesc('begin_at');
+        $query->orderBy('begin_at');
+        $query->orderBy('title');
 
         $calendars = $query->get()->toArray();
 

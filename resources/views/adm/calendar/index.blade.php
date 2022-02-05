@@ -37,8 +37,8 @@
     </tbody>
     <tfoot>
         <tr class="bg-secondary text-white">
-            <td colspan="6" class="text-right font-weight-bold">500</td>
-            <td class="text-right font-weight-bold">480</td>
+            <td colspan="6" class="text-right font-weight-bold">{{ array_sum(array_column($calendars, 'billets_goal')) }}</td>
+            <td class="text-right font-weight-bold"></td>
         </tr>
     </tfoot>
 </table>
