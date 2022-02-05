@@ -37,4 +37,9 @@ class User extends Authenticatable
         'email_verified_at, deleted_at' => 'datetime',
         'is_active' => 'boolean',
     ];
+
+    public function sales()
+    {
+        return $this->hasMany(Sale::class, 'user_id', 'id');
+    }
 }

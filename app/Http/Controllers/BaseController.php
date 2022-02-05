@@ -20,9 +20,13 @@ abstract class BaseController extends Controller
         }
     }
 
-    protected function validatePerfil($user)
+    protected function validatePerfil($user, $isAdmin = false)
     {
         $perfil = $user->type;
+
+        if($isAdmin) {
+            return $perfil == 'Administrador';
+        }
 
         return in_array($perfil, ['Coordenador', 'Administrador']);
     }
@@ -67,5 +71,21 @@ abstract class BaseController extends Controller
     {
 
         return preg_replace("/[^0-9]/", "", $str);
+    }
+
+    protected function toDateBr($data = '')
+    {
+        if (!empty($data) and $data != '0000-00-00') {
+
+            list($ano, $mes, $dia) = explode('-', substr(@$data, 0, 10));
+            return $dia . '/' . $mes . '/' . $ano;
+        }
+        return 0;
+    }
+
+    protected function toDate($data = '')
+    {
+        list($dia, $mes, $ano) = explode('/', @$data);
+        return $ano . '-' . $mes . '-' . $dia;
     }
 }

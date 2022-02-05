@@ -6,3 +6,21 @@
 
 // Bootstrap
 @import '~bootstrap/scss/bootstrap';
+
+.bilhete-box-item {
+    background: url("/assets/img/billet.png")
+      no-repeat;
+    width: 301;
+    height: 534;
+  }
+  
+  .ticket-number {
+    margin-bottom: 45px;
+    margin-left: 164px;
+    font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
+    font-size: large;
+    font-weight: bold;
+    color: #fff;
+    letter-spacing: .2rem;
+  }
+  

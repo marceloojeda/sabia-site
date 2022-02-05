@@ -1,17 +1,3 @@
-// var chartData = {
-//     labels: ["Andre", "Paulo", "Talita", "Marina", "Marcelo", "Carlos", "Tião Rosa"],
-//     datasets: [{
-//         data: [2, 6, 8, 5, 3, 4, 6],
-//     },
-//     {
-//         data: [4, 1, 10, 3, 2, 5, 8],
-//     }]
-// };
-
-/* chart.js chart examples */
-
-
-
 window.onload = function () {
     var chBar = document.getElementById("chBar");
     if (chBar) {
@@ -19,7 +5,7 @@ window.onload = function () {
     }
 };
 
-function renderChatComparative() {
+window.renderChatComparative = function () {
     // chart colors
     var colors = ['#007bff', '#28a745', '#333333', '#c3e6cb', '#dc3545', '#6c757d'];
 

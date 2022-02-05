@@ -1,7 +1,4 @@
-@extends('coordenador_layout')
-
-<script type="text/javascript" src="/assets/js/chart.min.js"></script>
-<script type="text/javascript" src="/assets/js/head_home.js"></script>
+@extends('layouts.head')
 
 @section('content')
 <div class="container">

@@ -1,4 +1,4 @@
-@extends('coordenador_layout')
+@extends('layouts.head')
 
 @section('title', 'Vendas')
 @section('page_title', 'Registro de venda')
@@ -28,7 +28,7 @@
                     </div>
                     <div class="col-sm-3 form-group">
                         <label for="buyer_phone">Telefone comprador</label>
-                        <input class="form-control" type="text" name="buyer_phone" id="buyer_phone"  onkeypress="mask(this, mphone);" onblur="mask(this, mphone);">
+                        <input class="form-control" type="text" name="buyer_phone" id="buyer_phone" onkeypress="mask(this, mphone);" onblur="mask(this, mphone);">
                     </div>
                     <div class="col-sm-3 form-group">
                         <label for="amount_paid">Bilhetes</label>

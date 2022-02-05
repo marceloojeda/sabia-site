@@ -7,8 +7,7 @@
 
     <title>Páscoa do Sabiá - @yield('title')</title>
 
-    <link rel="stylesheet" href="/assets/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/assets/css/panel.css">
+    <link rel="stylesheet" href="/css/app.css">
 </head>
 
 <body>
@@ -86,6 +85,7 @@
                     </div>
                     <div class="col-sm-6 text-right mt-2">
                         <a href="/home" class="mr-2">Home</a>
+                        <a href="/teams" class="mr-2">Minha Equipe</a>
                         <a href="/sales" class="ml-2 mr-2">Bilhetes Vendidos</a>
                         <a href="/sales/create" class="ml-2">Nova Venda</a>
                     </div>
@@ -97,10 +97,7 @@
         </div>
     </div>
 
-    <script type="text/javascript" src="/assets/js/jquery-3.6.0.min.js"></script>
-    <script type="text/javascript" src="/assets/js/bootstrap.min.js"></script>
-    <!-- <script type="text/javascript" src="/assets/js/panel.js"></script> -->
-    <script type="text/javascript" src="/assets/js/mascara.js"></script>
+    <script type="text/javascript" src="/js/app.js"></script>
 
 </body>
 

@@ -1,4 +1,4 @@
-@extends('coordenador_layout')
+@extends('layouts.head')
 
 @section('title', 'Vendas')
 @section('page_title', 'Listagem de vendas')
