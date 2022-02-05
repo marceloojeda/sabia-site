@@ -98,6 +98,7 @@
     </div>
 
     <script type="text/javascript" src="/js/app.js"></script>
+    <script type="text/javascript" src="/assets/js/html-to-image.js"></script>
 
 </body>
 
