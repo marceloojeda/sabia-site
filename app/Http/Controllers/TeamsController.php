@@ -38,6 +38,10 @@ class TeamsController extends BaseController
             ->get()
             ->toArray();
 
+        foreach ($team as $key => $member) {
+            $team[$key]['phone'] = str_replace('_', '', $member['phone']);
+        }
+
         return view('coordenador.team.index', compact('team'));
     }
 
@@ -62,8 +66,8 @@ class TeamsController extends BaseController
             'head_id' => $request->user()->id,
             'type' => 'Vendedor',
             'name' => $request->name,
-            'phone' => $request->phone,
-            'email' => $phone . '_head_' . $request->user()->id . '@sabia.in',
+            'phone' => $this->checkTelefone($request->phone),
+            'email' => $this->checkSellerEmail($phone, $request->user()->id),
             'password' => Hash::make('password'),
             'is_active' => true,
             'email_verified_at' => date('Y-m-d H:i:s')
@@ -95,7 +99,7 @@ class TeamsController extends BaseController
         $user = User::where('id', $user)->firstOrFail();
         $userData = [
             'name' => $request->name,
-            'phone' => $request->phone
+            'phone' => $this->checkTelefone($request->phone)
         ];
 
         $user->update($userData);
@@ -119,5 +123,32 @@ EOF;
         $teams = DB::select($sql);
 
         return view('adm.teams.index', compact('teams'));
+    }
+
+    private function checkTelefone($numeroComMascara)
+    {
+        $novoNumero = $numeroComMascara;
+        while ($user = User::where('phone', $novoNumero)->first()) {
+            $novoNumero .= "_";
+        }
+        
+        return $novoNumero;
+    }
+
+    private function checkSellerEmail($phone, $headId)
+    {
+        $hasUnique = false;
+        $email = $phone . '_head_' . $headId . '@sabia.in';
+        while (!$hasUnique) {
+            $user = User::where('email', $email)->first();
+            if(!$user) {
+                $hasUnique = true;
+            } else {
+                $phone .= '_';
+                $email = $phone . '_head_' . $headId . '@sabia.in';
+            }
+        }
+        
+        return $email;
     }
 }
