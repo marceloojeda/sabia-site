@@ -31,7 +31,7 @@ abstract class BaseController extends Controller
         return in_array($perfil, ['Coordenador', 'Administrador']);
     }
 
-    protected function getVendedores($headId = null)
+    protected function getVendedores($headId = null, $headName = '')
     {
         $query = DB::table('users')
             ->where('is_active', true)
@@ -45,7 +45,17 @@ abstract class BaseController extends Controller
             ->orderBy('name')
             ->get(['id', 'name', 'email']);
 
-        return $vendedores->toArray();
+        $arrSellers = $vendedores->toArray();
+        if(!empty($headId) && !empty($headName)) {
+            $head = [
+                'id' => $headId,
+                'name' => $headName,
+                'email' => ''
+            ];
+            array_push($arrSellers, (object)$head);
+        }
+
+        return $arrSellers;
     }
 
     protected function getVendedor($vendedorId)

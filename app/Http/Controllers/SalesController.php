@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Sale;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use stdClass;
 
 class SalesController extends BaseController
 {
@@ -79,7 +80,7 @@ class SalesController extends BaseController
     {
         $this->checkPerfilUsuario($request);
 
-        $this->arrVendedores = $this->getVendedores($request->user()->id);
+        $this->arrVendedores = $this->getVendedores($request->user()->id, $request->user()->name);
 
         $saleObj = new Sale();
 
@@ -184,7 +185,7 @@ class SalesController extends BaseController
     {
         $this->checkPerfilUsuario($request);
 
-        $this->arrVendedores = $this->getVendedores($request->user()->id);
+        $this->arrVendedores = $this->getVendedores($request->user()->id, $request->user()->name);
 
         return view('coordenador.sale_edit', [
             'sale' => $sale,
