@@ -34,6 +34,7 @@ class TeamsController extends BaseController
         $team = User::with('sales')
             ->where('head_id', $request->user()->id)
             ->where('type', 'Vendedor')
+            ->where('is_active', true)
             ->orderBy('name')
             ->get()
             ->toArray();
@@ -150,5 +151,11 @@ EOF;
         }
         
         return $email;
+    }
+
+    public function removeSeller(User $user)
+    {
+        $user->update(['is_active' => false]);
+        return redirect('/teams');
     }
 }

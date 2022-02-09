@@ -11,6 +11,7 @@ Route::post('sales/filtered', 'SalesController@index');
 
 Route::resource('calendars', 'CalendarsController');
 Route::resource('teams', 'TeamsController');
+Route::get('/teams/{user}/remove', 'TeamsController@removeSeller');
 
 Route::get('/', function() {
     return response()->redirectToIntended('/home');

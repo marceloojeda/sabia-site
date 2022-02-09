@@ -42,3 +42,9 @@ window.renderChatComparative = function () {
         }
     });
 }
+
+window.sellerDelete = function (seller) {
+    if(confirm('Confirma exclusão desse membro da sua equipe?')) {
+        window.location.href = "/teams/" + seller + '/remove';
+    }
+}
