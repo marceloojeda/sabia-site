@@ -99,17 +99,13 @@ class MyzapController extends BaseController
         $message = '';
         for ($i = 0; $i < 3; $i++) {
             switch ($i) {
-                case 0:
-                    $message = 'Olá ' . $seller->name;
-                    break;
-
                 case 1:
-                    $message = 'Segue bilhete do sr(a) *' . $sale->buyer . '*';
+                    $message = $this->getDefaultText();
                     break;
 
                 case 2:
                     if(env('APP_ENV') == 'local') {
-                        $message = env('MYZAP_IMG_DIR') . $sale->billet_file;    
+                        $message = "http://itaimbemaquinas.com.br/wp-content/uploads/sites/79/2020/07/zap-vermelho.png"; // env('MYZAP_IMG_DIR') . $sale->billet_file;    
                     } else {
                         $message = env('APP_URL') . '/assets/img/billets/' . $sale->billet_file;
                     }
@@ -130,6 +126,10 @@ class MyzapController extends BaseController
 
     private function sendText($session, $sellerPhone, $message, $isFile = false)
     {
+        if(empty($message)) {
+            return true;
+        }
+        
         $serverhost = env('MYZAP_URL');
         if($isFile) {
             $serverhost .= '/sendImage';
@@ -155,16 +155,35 @@ class MyzapController extends BaseController
 
         $jsonResp = Http::withHeaders($headers)->post($serverhost, $body);
 
-        // if($jsonResp->status() != 200) {
-        //     var_dump([
-        //         'host' => $serverhost,
-        //         'headers' => $headers,
-        //         'body' => $body
-        //     ]);
-        //     dd($jsonResp->body());
-        // }
+        if(env('APP_ENV') == 'local' && $jsonResp->status() != 200) {
+            var_dump([
+                'host' => $serverhost,
+                'headers' => $headers,
+                'body' => $body
+            ]);
+            dd($jsonResp->body());
+        }
 
         return $jsonResp->status() == 200;
+    }
+
+    private function getDefaultText()
+    {
+        $text = <<<EOF
+*Caro benfeitor*,
+
+Somos gratos pelo gesto de estender a mão ao próximo e nos auxiliar a melhor atender todas as pessoas que vem até nós em busca de luz, de amor, de uma palavra amiga!
+*Que Deus multiplique as bençãos em sua vida!*
+
+O resultado do sorteio dos 3 prêmios será divulgado em nosso *site* e no nosso *Instagram* no dia 14 abril de 2022.
+
+Nos acompanhe no Insta: instagram.com/ocantosabia
+E em nosso site: ocantodosabia.com.br
+
+*Equipe de Promoções*
+EOF;
+
+        return $text;
     }
 
     public function storeBillet(Request $request)
