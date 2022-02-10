@@ -175,7 +175,7 @@ class MyzapController extends BaseController
 Somos gratos pelo gesto de estender a mão ao próximo e nos auxiliar a melhor atender todas as pessoas que vem até nós em busca de luz, de amor, de uma palavra amiga!
 *Que Deus multiplique as bençãos em sua vida!*
 
-O resultado do sorteio dos 3 prêmios será divulgado em nosso *site* e no nosso *Instagram* no dia 14 abril de 2022.
+O resultado do sorteio dos 3 prêmios será divulgado em nosso *site* e no nosso *Instagram* no dia 17 abril de 2022.
 
 Nos acompanhe no Insta: instagram.com/ocantosabia
 E em nosso site: ocantodosabia.com.br
