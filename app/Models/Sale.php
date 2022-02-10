@@ -41,7 +41,8 @@ class Sale extends Model
 
         $results = DB::table('sales')
             ->join('users', 'sales.user_id', 'users.id')
-            ->where('users.head_id', $head->id);
+            ->where('users.head_id', $head->id)
+            ->orWhere('user_id', $head->id);
 
         if ($request->has('trashed')) {
             $results->withTrashed();
