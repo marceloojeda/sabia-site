@@ -77,3 +77,7 @@ Cards numeros e porcentuais
 Total bilhetes promoção
 Total equipe
 Total semana
+
+
+promocoeseeventos.ocantodosabia@gmail.com
+ocantodosabia2021
