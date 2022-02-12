@@ -1,4 +1,6 @@
 window.initMyzap = function () {
+    document.getElementById('btnSendTicket').setAttribute('disabled', true);
+
     $('#myzapModal').modal('show');
 
     startMyzap();
@@ -18,6 +20,8 @@ window.startMyzap = function () {
                 document.getElementById('myzap-box').classList.add('d-none');
 
                 document.getElementById('tickets-box').classList.remove('d-none');
+
+                setMyzapAlert('');
             }
 
             close = false;
