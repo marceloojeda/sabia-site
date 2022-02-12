@@ -213,7 +213,13 @@ class SalesController extends BaseController
         $this->validate($request, $this->rulesUpdate());
 
         $saleData = $request->except(['_token']);
-        $saleData['seller'] = $this->getVendedor($saleData['user_id'])->name;
+
+        //caso a venda seja do proprio coordenador
+        if($saleData['user_id'] == $request->user()->id) {
+            $saleData['seller'] = $request->user()->name;
+        } else {
+            $saleData['seller'] = $this->getVendedor($saleData['user_id'])->name;
+        }
         $saleData['payment_status'] = $sale->payment_status;
 
         $bilhetes = $saleData['amount_paid'];
