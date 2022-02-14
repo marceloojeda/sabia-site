@@ -103,4 +103,51 @@ class Sale extends Model
 
         return !$sales ? 0 : sizeof($sales->toArray());
     }
+
+    public function getInfoSalesToAdm()
+    {
+        $result = DB::table('sales')
+            ->select(DB::raw("COUNT(*) as total"))
+            ->get('total');
+
+        $totalGeral = $result->toArray()[0]->total ?? 0;
+
+        $result = DB::table('sales')
+            ->select(DB::raw("COUNT(*) as total"))
+            ->whereNotNull('amount_paid')
+            ->whereNotNull('user_id')
+            ->get('total');
+
+        $totalConfirmados = $result->toArray()[0]->total ?? 0;
+
+        $result = DB::table('sales')
+            ->select(DB::raw("COUNT(*) as total"))
+            ->whereNull('amount_paid')
+            ->whereNull('user_id')
+            ->get('total');
+
+        $totalPendentes = $result->toArray()[0]->total ?? 0;
+
+        return [
+            'geral' => $totalGeral,
+            'confirmados' => $totalConfirmados,
+            'pendentes' => $totalPendentes
+        ];
+    }
+
+    public static function getSalesPerTeam($headId)
+    {
+        $sql = <<<EOF
+        select count(s.id) as vendas, h.name as head
+        from sales s join users u on s.user_id = u.id 
+        join users h on u.head_id = h.id 
+        where s.user_id is not null
+        and s.amount_paid is not null
+        and s.payment_status = 'Pago'
+        and u.head_id = :headId
+        group by h.name;
+EOF;
+
+        return DB::select($sql, ['headId' => $headId]);
+    }
 }

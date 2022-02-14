@@ -14,28 +14,37 @@
     </thead>
     <tbody>
         @if(!$teams)
-            <tr>
-                <td colspan="3" class="text-center">nenhuma equipe cadastrada</td>
-            </tr>
+        <tr>
+            <td colspan="3" class="text-center">nenhuma equipe cadastrada</td>
+        </tr>
         @else
             @php
-                $head = '';
+            $head = '';
             @endphp
             @foreach($teams as $team)
-            <tr>
-                @if($team->head != $head)
+                @if($team['head'] != $head)
                     @php
-                        $head = $team->head;
+                    $head = $team['head'];
                     @endphp
-                    <td colspan="3" class="bg-info"><b>Coordenador: {{ $head }}</b></td>
+                    <tr class="bg-info">
+                        <td>{{ $team['name'] }}</td>
+                        <td></td>
+                        <td class="text-right">{{ $team['billets'] }}</td>
+                    </tr>
                 @else
-                    <td>&nbsp;&nbsp;&nbsp;{{ $team->name }}</td>
-                    <td>{{ $team->phone }}</td>
-                    <td class="text-right">{{ $team->billets }}</td>
+                    <tr>
+                        <td>&nbsp;&nbsp;&nbsp;{{ $team['name'] }}</td>
+                        <td>{{ $team['phone'] }}</td>
+                        <td class="text-right">{{ $team['billets'] }}</td>
+                    </tr>
                 @endif
-            </tr>
             @endforeach
         @endif
     </tbody>
+    <tfoot>
+        <tr class="bg-secondary">
+            <td colspan="3" class="text-right">$team</td>
+        </tr>
+    </tfoot>
 </table>
 @endsection
