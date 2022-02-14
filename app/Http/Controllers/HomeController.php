@@ -74,6 +74,10 @@ class HomeController extends BaseController
             'equipe' => $teamSales[0]->vendas ?? 0
         ];
 
+        if($request->user()->type == 'Coordenador') {
+            return $retorno;
+        }
+
         $semanaId = env('SEMANA_ATUAL_HEAD');
         $calendar = Calendar::where('is_active', true)
             ->where('id', $semanaId)
