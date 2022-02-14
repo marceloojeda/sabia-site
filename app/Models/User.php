@@ -42,4 +42,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(Sale::class, 'user_id', 'id');
     }
+
+    public function head()
+    {
+        return $this->hasOne(User::class, 'id', 'head_id');
+    }
 }

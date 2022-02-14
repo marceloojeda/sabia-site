@@ -24,3 +24,4 @@ Route::get('/myzap/send-ticket/{sale}', 'MyzapController@sendTicket');
 Route::post('/myzap/store-billet', 'MyzapController@storeBillet');
 
 Route::get('/adm/teams', 'TeamsController@indexToAdm');
+Route::get('/adm/desempenho', 'HomeController@getDesempenho');

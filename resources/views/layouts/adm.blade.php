@@ -103,6 +103,10 @@
 
     <script type="text/javascript" src="/js/app.js"></script>
 
+    <script>
+    renderChatDesempenho();
+</script>
+
 </body>
 
 </html>

@@ -18,10 +18,12 @@
         <div class="col-sm-3">
             <div class="card">
                 <div class="card-header bg-primary">
-                    <h4 class="card-title text-white">Total da promoção</h4>
+                    <h4 class="card-title text-white">Totais da Promoção</h4>
                 </div>
-                <div class="card-body bg-primary text-center">
-                    <h3 class="text-white text-decoration-bold">600 <small>27,7%</small></h3>
+                <div class="card-body bg-primary text-white">
+                    Meta: <b>2.160</b>
+                    <br>
+                    Atual: <b>{{ $headAlert['totais']['confirmados'] }} ({{ number_format($headAlert['totais']['confirmados'] / 2160 * 100, 2) }}%)</b>
                 </div>
             </div>
         </div>
@@ -29,10 +31,12 @@
         <div class="col-sm-3">
             <div class="card">
                 <div class="card-header bg-warning">
-                    <h4 class="card-title text-dark">Total da equipe</h4>
+                    <h4 class="card-title text-dark">Totais da Equipe</h4>
                 </div>
-                <div class="card-body bg-warning text-center">
-                    <h3 class="text-dark text-decoration-bold">125 <small>5,8%</small></h3>
+                <div class="card-body bg-warning">
+                    Meta: <b>196,36</b>
+                    <br>
+                    Atual: <b>{{ $headAlert['totais']['equipe'] }} ({{ number_format($headAlert['totais']['equipe'] / 196.36 * 100, 2) }}%)</b>
                 </div>
             </div>
         </div>
@@ -40,10 +44,12 @@
         <div class="col-sm-3">
             <div class="card">
                 <div class="card-header bg-info">
-                    <h4 class="card-title text-white">Meta da semana</h4>
+                    <h4 class="card-title text-white">Meta da {{ $headAlert['metas']['equipe']['title'] }}</h4>
                 </div>
-                <div class="card-body bg-info text-center">
-                    <h3 class="text-white text-decoration-bold">200 <small>9,2%</small></h3>
+                <div class="card-body bg-info text-dark">
+                    Período: <b>10/02 a 21/02</b>
+                    <br>
+                    Meta: <b>{{ $headAlert['metas']['equipe']['billets_goal'] }}</b>
                 </div>
             </div>
         </div>
@@ -51,16 +57,18 @@
         <div class="col-sm-3">
             <div class="card">
                 <div class="card-header bg-danger">
-                    <h4 class="card-title text-white">Total da semana</h4>
+                    <h4 class="card-title text-white">Vendas da Semana</h4>
                 </div>
-                <div class="card-body bg-danger text-center">
-                    <h3 class="text-white text-decoration-bold">225 <small>112,5%</small></h3>
+                <div class="card-body bg-danger text-white">
+                    Meta: <b>{{ $headAlert['metas']['equipe']['billets_goal'] }}</b>
+                    <br>
+                    Atual: ##
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="row mt-4">
+    <!-- <div class="row mt-4">
         <div class="col-sm-12">
             <div class="card text-center">
                 <div class="card-header">
@@ -74,21 +82,7 @@
                 </div>
             </div>
         </div>
-
-        <!-- <div class="col-sm-6">
-            <div class="card text-center">
-                <div class="card-header">
-                    Meta Promoção
-                </div>
-                <div class="card-body">
-                    <img src="assets/img/meta-promocao-chart.png" class="img-fluid" alt="...">
-                </div>
-                <div class="card-footer text-muted">
-                    alguma observação
-                </div>
-            </div>
-        </div> -->
-    </div>
+    </div> -->
 
     @if (!empty($headAlert['pending-sales']) && $headAlert['pending-sales']['total'])
     <div class="row">

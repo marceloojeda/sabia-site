@@ -112,18 +112,52 @@ class TeamsController extends BaseController
     {
         $this->checkPerfilUsuario($request);
 
-        $sql = <<<EOF
-        select count(s.id) as billets, u.id, u.name, u.phone, h.name as head
-        from users u 
-        join sales s on u.id = s.user_id
-        join users h on u.head_id = h.id 
-        group by u.id, u.name, u.phone, h.name
-        order by h.name, u.name;
-EOF;
+        $heads = User::where('type', 'Coordenador')
+            ->where('is_active', true)
+            ->get();
 
-        $teams = DB::select($sql);
+        $teams = [];
+        foreach ($heads as $k => $head) {
+            $arrHead = [
+                'id' => $head->id,
+                'name' => $head->name,
+                'phone' => $head->phone,
+                'billets' => 0,
+                'head' => $head->name
+            ];
+            if ($head->sales) {
+                $arrHead['billets'] = sizeof($head->sales);
+            }
+
+            array_push($teams, $arrHead);
+
+            $this->getTeamFromHead($head->id, $head->name, $teams);
+        }
 
         return view('adm.teams.index', compact('teams'));
+    }
+
+    private function getTeamFromHead($headId, $headName, &$teams)
+    {
+        $sellers = User::where('type', 'Vendedor')
+            ->where('is_active', true)
+            ->where('head_id', $headId)
+            ->get();
+
+        foreach ($sellers as $k => $seller) {
+            $arrSeller = [
+                'id' => $seller->id,
+                'name' => $seller->name,
+                'phone' => $seller->phone,
+                'billets' => 0,
+                'head' => $headName
+            ];
+            if ($seller->sales) {
+                $arrSeller['billets'] = sizeof($seller->sales);
+            }
+
+            array_push($teams, $arrSeller);
+        }
     }
 
     private function checkTelefone($numeroComMascara)
@@ -132,7 +166,7 @@ EOF;
         while ($user = User::where('phone', $novoNumero)->first()) {
             $novoNumero .= "_";
         }
-        
+
         return $novoNumero;
     }
 
@@ -142,14 +176,14 @@ EOF;
         $email = $phone . '_head_' . $headId . '@sabia.in';
         while (!$hasUnique) {
             $user = User::where('email', $email)->first();
-            if(!$user) {
+            if (!$user) {
                 $hasUnique = true;
             } else {
                 $phone .= '_';
                 $email = $phone . '_head_' . $headId . '@sabia.in';
             }
         }
-        
+
         return $email;
     }
 
