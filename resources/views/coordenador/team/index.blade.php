@@ -24,7 +24,7 @@
             <tr>
                 <td>{{ $member['name'] }}</td>
                 <td>{{ $member['phone'] }}</td>
-                <td class="text-right">{{ sizeof($member['sales']) }}</td>
+                <td class="text-right">{{ $member['sales'] }}</td>
                 <td class="text-right"><a href="/teams/{{ $member['id'] }}/edit">alterar cadastro</a></td>
             </tr>
             @endforeach

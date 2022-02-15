@@ -47,4 +47,28 @@ class User extends Authenticatable
     {
         return $this->hasOne(User::class, 'id', 'head_id');
     }
+
+    public function getTeam(User $head)
+    {
+        $team = User::where('is_active', true)
+            ->where('head_id', $head->id)
+            ->where('type', 'Vendedor')
+            ->get()->toArray();
+
+        $retorno = [];
+        foreach ($team as $member) {
+            $retorno[] = [
+                'id' => $member['id'],
+                'name' => $member['name'],
+                'phone' => $member['phone']
+            ];
+        }
+        $retorno[] = [
+            'id' => $head['id'],
+            'name' => $head['name'],
+            'phone' => $head['phone'],
+        ];
+
+        return $retorno;
+    }
 }

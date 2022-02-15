@@ -31,19 +31,30 @@ class TeamsController extends BaseController
     {
         $this->checkPerfilUsuario($request);
 
-        $team = User::with('sales')
-            ->where('head_id', $request->user()->id)
-            ->where('type', 'Vendedor')
-            ->where('is_active', true)
-            ->orderBy('name')
-            ->get()
-            ->toArray();
+        $userModel = new User();
+        $team = $userModel->getTeam($request->user());
 
         foreach ($team as $key => $member) {
             $team[$key]['phone'] = str_replace('_', '', $member['phone']);
+            $team[$key]['sales'] = $this->getTotalVendas($member['id']);
         }
 
         return view('coordenador.team.index', compact('team'));
+    }
+
+    private function getTotalVendas($userId)
+    {
+        $sales = Sale::where('user_id', $userId)
+            ->whereNotNull('amount_paid')
+            ->where('payment_status', 'Pago')
+            ->select('id')
+            ->get();
+
+        if(!$sales) {
+            return 0;
+        }
+
+        return sizeof($sales->toArray());
     }
 
     public function create(Request $request)
