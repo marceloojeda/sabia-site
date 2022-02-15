@@ -1,4 +1,4 @@
-@extends('layouts.adm')
+@extends('layouts.head')
 
 @section('title', 'Painel do Coordenador')
 @section('page_title', 'Cadastro de membro')
