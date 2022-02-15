@@ -67,11 +67,21 @@ class HomeController extends BaseController
             ->whereNotNull('user_id')
             ->select("id")
             ->get();
+
         $teamSales = Sale::getSalesPerTeam($request->user()->id);
+        $headSales = Sale::getSalesOfHead($request->user()->id);
+        $totalEquipe = 0;
+        if(!empty($teamSales[0]->vendas)) {
+            $totalEquipe = $teamSales[0]->vendas;
+        }
+        if(!empty($headSales[0]->vendas)) {
+            $totalEquipe += $headSales[0]->vendas;
+        }
+
         $retorno['totais'] = [
             'geral' => sizeof($sales),
             'confirmados' => sizeof($confirmedSales),
-            'equipe' => $teamSales[0]->vendas ?? 0
+            'equipe' => $totalEquipe
         ];
 
         $semanaId = env('SEMANA_ATUAL_HEAD');

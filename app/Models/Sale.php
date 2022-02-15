@@ -144,8 +144,23 @@ class Sale extends Model
         where s.user_id is not null
         and s.amount_paid is not null
         and s.payment_status = 'Pago'
-        and (u.head_id = $headId or u.id = $headId)
+        and u.head_id = $headId
         group by h.name;
+EOF;
+
+        return DB::select($sql);
+    }
+
+    public static function getSalesOfHead($headId)
+    {
+        $sql = <<<EOF
+        select count(s.id) as vendas, u.name as head
+        from sales s join users u on s.user_id = u.id 
+        where s.user_id is not null
+        and s.amount_paid is not null
+        and s.payment_status = 'Pago'
+        and s.user_id = $headId
+        group by u.name;
 EOF;
 
         return DB::select($sql);
