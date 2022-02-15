@@ -144,7 +144,7 @@ class Sale extends Model
         where s.user_id is not null
         and s.amount_paid is not null
         and s.payment_status = 'Pago'
-        and (u.head_id = $headId or s.user_id = $headId)
+        and (u.head_id = $headId or u.id = $headId)
         group by h.name;
 EOF;
 
