@@ -27,3 +27,7 @@ Homestead.json
 sprint log.txt
 ojeda_ec2-sabia.pem
 /public/assets/img/billets/*
+
+# JS and CSS compileds
+/public/js/*
+/public/css/*

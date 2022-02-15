@@ -8,24 +8,37 @@ window.initMyzap = function () {
 
 window.startMyzap = function () {
     let close = true;
+    let isConnecting = false;
+
     let startMyzapTimer = setInterval(() => {
-        startMyzapAsync(close).then((data) => {
-            if (data.state == 'QRCODE' && data.status == 'notLogged') {
-                document.getElementById('myzap-qrcode').setAttribute('src', data.qrcode);
-            }
+        if(!isConnecting) {
+            isConnecting = true;
 
-            if (data.state == 'CONNECTED' && data.status == 'inChat') {
-                clearInterval(startMyzapTimer);
-                document.getElementById('myzap-box').classList.remove('d-flex');
-                document.getElementById('myzap-box').classList.add('d-none');
-
-                document.getElementById('tickets-box').classList.remove('d-none');
-
-                setMyzapAlert('');
-            }
-
-            close = false;
-        });
+            startMyzapAsync(close).then((data) => {
+                isConnecting = false;
+                
+                if (data.state == 'QRCODE' && data.status == 'notLogged') {
+                    document.getElementById('myzap-qrcode').setAttribute('src', data.qrcode);
+                }
+    
+                if (data.state == 'CONNECTED' && data.status == 'inChat') {
+                    clearInterval(startMyzapTimer);
+                    document.getElementById('myzap-box').classList.remove('d-flex');
+                    document.getElementById('myzap-box').classList.add('d-none');
+    
+                    document.getElementById('tickets-box').classList.remove('d-none');
+    
+                    setMyzapAlert('');
+                }
+    
+                close = false;
+            })
+            .fail((error) => {
+                isConnecting = false;
+                console.log(error.message);
+                alert(error.message);
+            });
+        }
     }, 2000);
 
     setTimeout(() => {
