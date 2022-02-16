@@ -33,3 +33,16 @@ update users set phone = '(34) 9879-9329', type = 'Coordenador' where id = 20;
 Gleibe
 gleybecristal@hotmail.com
 04798020176
+
+
+Juliana
+julianaherculanoo@icloud.com
+03114265227
+
+Felipe
+f.gomes815@gmail.com
+12132737657
+
+Larissa
+larissaferreira-mo@hotmail.com
+07693754644

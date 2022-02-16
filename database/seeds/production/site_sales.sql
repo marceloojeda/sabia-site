@@ -1,4 +1,4 @@
-select id, name, email from users where name like '%Elizangela%';
+select id, name, email from users where is_active = true and name like '%Larissa%';
 select id, ticket_number, seller, buyer, created_at from sales where user_id = 25;
 
 
