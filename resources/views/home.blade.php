@@ -44,12 +44,12 @@
         <div class="col-sm-3">
             <div class="card">
                 <div class="card-header bg-info">
-                    <h4 class="card-title text-white">Meta da {{ $headAlert['metas']['equipe']['title'] }}</h4>
+                    <h4 class="card-title text-white">Meta da {{ $headAlert['metas']['adm']['title'] }}</h4>
                 </div>
                 <div class="card-body bg-info text-dark">
                     Período: <b>10/02 a 21/02</b>
                     <br>
-                    Meta: <b>{{ $headAlert['metas']['equipe']['billets_goal'] }}</b>
+                    Meta: <b>{{ $headAlert['metas']['adm']['billets_goal'] }}</b>
                 </div>
             </div>
         </div>
@@ -60,9 +60,9 @@
                     <h4 class="card-title text-white">Vendas da Semana</h4>
                 </div>
                 <div class="card-body bg-danger text-white">
-                    Meta: <b>{{ $headAlert['metas']['equipe']['billets_goal'] }}</b>
+                    Meta: <b>{{ $headAlert['metas']['team']['billets_goal'] }}</b>
                     <br>
-                    Atual: ##
+                    Atual: <b>{{ $headAlert['metas']['team']['billets_actual'] }}</b>
                 </div>
             </div>
         </div>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Calendar;
 use App\Models\Sale;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -36,7 +37,7 @@ class HomeController extends BaseController
         $dashInfo = $this->getHeadDashInfo($request);
         $headAlert = $dashInfo;
 
-        if($request->user()->type == 'Administrador') {
+        if ($request->user()->type == 'Administrador') {
             $headAlert = $this->getInfoSales();
             return view('adm.home', ['headAlert' => $headAlert]);
         }
@@ -52,7 +53,7 @@ class HomeController extends BaseController
             ->select(['id', 'payment_method', 'buyer', 'buyer_phone', 'created_at'])
             ->orderByDesc('created_at')
             ->get();
-        
+
         $pendingSales = $pendingSalesQuery->toArray();
 
         $retorno = [
@@ -71,10 +72,10 @@ class HomeController extends BaseController
         $teamSales = Sale::getSalesPerTeam($request->user()->id);
         $headSales = Sale::getSalesOfHead($request->user()->id);
         $totalEquipe = 0;
-        if(!empty($teamSales[0]->vendas)) {
+        if (!empty($teamSales[0]->vendas)) {
             $totalEquipe = $teamSales[0]->vendas;
         }
-        if(!empty($headSales[0]->vendas)) {
+        if (!empty($headSales[0]->vendas)) {
             $totalEquipe += $headSales[0]->vendas;
         }
 
@@ -84,14 +85,22 @@ class HomeController extends BaseController
             'equipe' => $totalEquipe
         ];
 
+        $semanaId = env('SEMANA_ATUAL_ADM');
+        $calendarAdm = Calendar::where('is_active', true)
+            ->where('id', $semanaId)
+            ->first();
+
         $semanaId = env('SEMANA_ATUAL_HEAD');
-        $calendar = Calendar::where('is_active', true)
+        $calendarTeam = Calendar::where('is_active', true)
             ->where('id', $semanaId)
             ->first();
         $retorno['metas'] = [
-            'equipe' => $calendar->toArray()
+            'adm' => $calendarAdm->toArray(),
+            'team' => $calendarTeam->toArray(),
         ];
-        
+
+        $retorno['metas']['team']['billets_actual'] = $this->teamPerformanceCalculate($request->user()->id);
+
         return $retorno;
     }
 
@@ -127,22 +136,55 @@ class HomeController extends BaseController
         $retorno['desempenho'] = $arrChatInfo;
 
         return $retorno;
-
     }
 
-    public function getDesempenho()
+    private function teamPerformanceCalculate($headId)
     {
-        $salesModel = new Sale();
-        $teamsSales = $salesModel->getSalesPerTeam();
-        $arrChatInfo = [];
-        foreach ($teamsSales as $key => $team) {
-            $arrChatInfo[] = [
-                'team' => $team->head,
-                'goal' => 10,
-                'sales' => $team->vendas
-            ];
+        $semanaId = env('SEMANA_ATUAL_HEAD');
+        $calendarTeam = Calendar::where('is_active', true)
+            ->where('id', $semanaId)
+            ->first();
+        
+        if(!$calendarTeam) {
+            return;
+        }
+        
+        $heads = User::where('type', 'Coordenador')
+            ->where('is_active', true)
+            ->where('id', $headId)
+            ->get();
+
+        $arrHeads = $heads->toArray();
+        $totalTeam = 0;
+        foreach ($arrHeads as $head) {
+            $team = User::where('type', 'Vendedor')
+                ->where('is_active', true)
+                ->where('head_id', $head['id'])
+                ->get();
+
+            $totalTeam = $this->getSalesTeamPerPeriod($team->toArray(), $calendarTeam);
+        }
+        $totalTeam += $this->getSalesHeadPerPeriod($head, $calendarTeam);
+
+        return $totalTeam;
+    }
+
+    private function getSalesTeamPerPeriod(array $team, Calendar $calendar)
+    {
+        $saleModel = new Sale();
+        $total = 0;
+        foreach ($team as $seller) {
+            $total += $saleModel->getTeamSalesPerPeriod($calendar->begin_at, $calendar->finish_at,  $seller['id']);
         }
 
-        return response()->json($arrChatInfo);
+        return $total;
+    }
+
+    private function getSalesHeadPerPeriod(array $head, Calendar $calendar)
+    {
+        $saleModel = new Sale();
+        $total = $saleModel->getTeamSalesPerPeriod($calendar->begin_at, $calendar->finish_at,  $head['id']);
+
+        return $total;
     }
 }

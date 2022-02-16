@@ -92,12 +92,13 @@ class Sale extends Model
         return !$sales ? 0 : sizeof($sales->toArray());
     }
 
-    public function getTeamSalesPerPeriod($beginAt, $finishAt, $headId)
+    public function getTeamSalesPerPeriod($beginAt, $finishAt, $userId)
     {
-        $sales = Sale::join('users', 'sales.user_id', 'users.id')
-            ->where('users.head_id', $headId)
-            ->where('sales.created_at', '>=', $beginAt)
-            ->where('sales.created_at', '<=', $finishAt)
+        $sales = Sale::where('user_id', $userId)
+            ->where('created_at', '>=', $beginAt)
+            ->where('created_at', '<=', $finishAt)
+            ->whereNotNull('amount_paid')
+            ->where('payment_status', 'Pago')
             ->select('sales.id')
             ->get();
 
