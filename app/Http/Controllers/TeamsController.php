@@ -221,10 +221,11 @@ class TeamsController extends BaseController
         $teamSales = Sale::getSalesPerTeam($request->user()->id);
         $headSales = Sale::getSalesOfHead($request->user()->id);
         if($headSales && sizeof($headSales) > 0) {
-            $teamSales[] = [
+            $headSales = [
                 'vendas' => $headSales[0]->vendas,
                 'seller' => $headSales[0]->seller
             ];
+            $teamSales[] = (object)$headSales;
         }
 
         foreach ($teamSales as $key => $member) {
