@@ -48,20 +48,21 @@ window.renderGrafico = function (sellers, sales, metas) {
             backgroundColor: colors[3],
             label: 'Vendedor',
             yAxisID: 'y-axis-1'
-        },
-        {
-            type: 'line',
-            data: metas,
-            fill: false,
-            label: 'Meta Semana',
-            borderColor: colors[0],
-            backgroundColor: colors[0],
-            pointBorderColor: colors[0],
-            pointBackgroundColor: colors[0],
-            pointHoverBackgroundColor: colors[0],
-            pointHoverBorderColor: colors[0],
-            yAxisID: 'y-axis-2'
-        }]
+        }
+        // {
+        //     type: 'line',
+        //     data: metas,
+        //     fill: false,
+        //     label: 'Meta Semana',
+        //     borderColor: colors[0],
+        //     backgroundColor: colors[0],
+        //     pointBorderColor: colors[0],
+        //     pointBackgroundColor: colors[0],
+        //     pointHoverBackgroundColor: colors[0],
+        //     pointHoverBorderColor: colors[0],
+        //     yAxisID: 'y-axis-2'
+        // }
+        ]
     };
 
     window.myBar = new Chart(chBar, {
@@ -78,32 +79,8 @@ window.renderGrafico = function (sellers, sales, metas) {
                 }
             },
             scales: {
-                xAxes: [{
-                    display: true,
-                    gridLines: {
-                        display: false
-                    },
-                    labels: {
-                        show: true,
-                    }
-                }],
                 yAxes: [{
-                    type: "linear",
                     display: true,
-                    position: "left",
-                    id: "y-axis-1",
-                    gridLines: {
-                        display: false
-                    },
-                    labels: {
-                        show: true,
-
-                    }
-                }, {
-                    type: "linear",
-                    display: true,
-                    position: "right",
-                    id: "y-axis-2",
                     gridLines: {
                         display: false
                     },
