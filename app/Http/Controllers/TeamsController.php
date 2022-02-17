@@ -208,7 +208,7 @@ class TeamsController extends BaseController
     {
         $this->checkPerfilUsuario($request);
 
-        $semanaId = env('SEMANA_ATUAL_HEAD');
+        $semanaId = env('SEMANA_ATUAL_SELLER');
         $calendarTeam = Calendar::where('is_active', true)
             ->where('id', $semanaId)
             ->first();
@@ -218,20 +218,36 @@ class TeamsController extends BaseController
             $meta = $calendarTeam->billets_goal;
         }
 
-        $teamSales = Sale::getSalesPerTeam($request->user()->id);
-        $headSales = Sale::getSalesOfHead($request->user()->id);
-        if($headSales && sizeof($headSales) > 0) {
-            $headSales = [
-                'vendas' => $headSales[0]->vendas,
-                'seller' => $headSales[0]->seller
+        $retorno = [];
+        $retorno[] = [
+            'seller' => $request->user()->name,
+            'sales' => $this->getTotalSalesFromSeller($request->user()->id),
+            'meta' => $meta
+        ];
+        
+        $team = User::where('is_active', true)
+            ->where('head_id', $request->user()->id)
+            ->get();
+
+        foreach ($team as $member) {
+            $retorno[] = [
+                'seller' => $member->name,
+                'sales' => $this->getTotalSalesFromSeller($member->id),
+                'meta' => $meta
             ];
-            $teamSales[] = (object)$headSales;
         }
 
-        foreach ($teamSales as $key => $member) {
-            $teamSales[$key]->meta = $meta;
-        }
+        return response()->json($retorno);
+    }
 
-        return response()->json($teamSales);
+    private function getTotalSalesFromSeller($userId)
+    {
+        $sales = Sale::where('user_id', $userId)
+            ->whereNotNull('amount_paid')
+            ->where('payment_status', 'Pago')
+            ->select('id')
+            ->get();
+
+        return !$sales ? 0 : sizeof($sales->toArray());
     }
 }
