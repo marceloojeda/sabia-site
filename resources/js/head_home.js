@@ -18,20 +18,24 @@ window.getTeamPerformanceData = async function () {
 window.renderChatComparative = async function () {
     getTeamPerformanceData()
         .then((data) => {
-            const sellers = data.map(function (member) {
+            let sellers = data.map(function (member) {
                 return member.seller;
             });
 
-            const sales = data.map(function (member) {
+            let sales = data.map(function (member) {
                 return member.vendas;
             });
 
-            renderGrafico(sellers, sales);
+            let metas = data.map(function (member) {
+                return member.meta;
+            });
+
+            renderGrafico(sellers, sales, metas);
 
         });
 }
 
-window.renderGrafico = function (sellers, sales) {
+window.renderGrafico = function (sellers, sales, metas) {
     // chart colors
     var colors = ['#007bff', '#28a745', '#333333', '#c3e6cb', '#dc3545', '#6c757d'];
 
@@ -47,7 +51,7 @@ window.renderGrafico = function (sellers, sales) {
         },
         {
             type: 'line',
-            data: [24, 24, 24, 24, 24, 24, 24],
+            data: metas,
             fill: false,
             label: 'Meta Semana',
             borderColor: colors[0],

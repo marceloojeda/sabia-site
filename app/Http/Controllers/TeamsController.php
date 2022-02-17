@@ -208,6 +208,16 @@ class TeamsController extends BaseController
     {
         $this->checkPerfilUsuario($request);
 
+        $semanaId = env('SEMANA_ATUAL_HEAD');
+        $calendarTeam = Calendar::where('is_active', true)
+            ->where('id', $semanaId)
+            ->first();
+        
+        $meta = 0;
+        if($calendarTeam) {
+            $meta = $calendarTeam->billets_goal;
+        }
+
         $teamSales = Sale::getSalesPerTeam($request->user()->id);
         $headSales = Sale::getSalesOfHead($request->user()->id);
         if($headSales && sizeof($headSales) > 0) {
@@ -215,6 +225,10 @@ class TeamsController extends BaseController
                 'vendas' => $headSales[0]->vendas,
                 'seller' => $headSales[0]->seller
             ];
+        }
+
+        foreach ($teamSales as $key => $member) {
+            $teamSales[$key]['meta'] = $meta;
         }
 
         return response()->json($teamSales);
