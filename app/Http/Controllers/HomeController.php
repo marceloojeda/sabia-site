@@ -125,14 +125,12 @@ class HomeController extends BaseController
 
         $teamsSales = $salesModel->getSalesPerTeam(2);
         $arrChatInfo = [];
-        foreach ($teamsSales as $key => $team) {
-            $arrChatInfo[] = [
-                'team' => $team->head,
-                'goal' => $metas[1]['billets_goal'],
-                'sales' => $team->vendas
-            ];
-        }
-
+        $arrChatInfo[] = [
+            'team' => '',
+            'goal' => 0,
+            'sales' => 0
+        ];
+        
         $retorno['desempenho'] = $arrChatInfo;
 
         return $retorno;
