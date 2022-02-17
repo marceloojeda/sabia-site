@@ -228,7 +228,7 @@ class TeamsController extends BaseController
         }
 
         foreach ($teamSales as $key => $member) {
-            $teamSales[$key]['meta'] = $meta;
+            $teamSales[$key]->meta = $meta;
         }
 
         return response()->json($teamSales);

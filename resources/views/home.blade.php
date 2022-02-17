@@ -79,9 +79,9 @@
                 <div class="card-body">
                     <canvas id="chBar"></canvas>
                 </div>
-                <div class="card-footer text-muted">
-                    houve uma melhora nas vendas \o/
-                </div>
+                <!-- <div class="card-footer text-muted">
+                    
+                </div> -->
             </div>
         </div>
     </div>
