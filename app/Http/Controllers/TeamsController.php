@@ -221,7 +221,7 @@ class TeamsController extends BaseController
         $retorno = [];
         $retorno[] = [
             'seller' => $request->user()->name,
-            'sales' => $this->getTotalSalesFromSeller($request->user()->id),
+            'vendas' => $this->getTotalSalesFromSeller($request->user()->id),
             'meta' => $meta
         ];
         
@@ -232,7 +232,7 @@ class TeamsController extends BaseController
         foreach ($team as $member) {
             $retorno[] = [
                 'seller' => $member->name,
-                'sales' => $this->getTotalSalesFromSeller($member->id),
+                'vendas' => $this->getTotalSalesFromSeller($member->id),
                 'meta' => $meta
             ];
         }
