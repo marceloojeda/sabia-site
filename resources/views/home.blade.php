@@ -14,6 +14,8 @@
     </div>
     @endif
 
+    <input type="hidden" id="urlApp" value="{{ env('APP_URL') }}">
+
     <div class="row mb-4">
         <div class="col-sm-4">
             <div class="card">
@@ -68,11 +70,11 @@
         </div>
     </div>
 
-    <!-- <div class="row mt-4">
+    <div class="row mt-4">
         <div class="col-sm-12">
             <div class="card text-center">
                 <div class="card-header">
-                    Comparativo com a semana passada
+                    Desempenho do time
                 </div>
                 <div class="card-body">
                     <canvas id="chBar"></canvas>
@@ -82,7 +84,7 @@
                 </div>
             </div>
         </div>
-    </div> -->
+    </div>
 
     @if (!empty($headAlert['pending-sales']) && $headAlert['pending-sales']['total'])
     <div class="row">

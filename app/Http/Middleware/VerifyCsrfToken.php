@@ -15,6 +15,7 @@ class VerifyCsrfToken extends Middleware
         'myzap/start',
         'myzap/qrcode/*',
         'myzap/send-ticket/*',
-        'myzap/store-billet'
+        'myzap/store-billet',
+        'team/get-performance'
     ];
 }

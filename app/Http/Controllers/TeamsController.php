@@ -203,4 +203,20 @@ class TeamsController extends BaseController
         $user->update(['is_active' => false]);
         return redirect('/teams');
     }
+
+    public function getPerformance(Request $request)
+    {
+        $this->checkPerfilUsuario($request);
+
+        $teamSales = Sale::getSalesPerTeam($request->user()->id);
+        $headSales = Sale::getSalesOfHead($request->user()->id);
+        if($headSales && sizeof($headSales) > 0) {
+            $teamSales[] = [
+                'vendas' => $headSales[0]->vendas,
+                'seller' => $headSales[0]->seller
+            ];
+        }
+
+        return response()->json($teamSales);
+    }
 }
