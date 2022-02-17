@@ -64,7 +64,7 @@ window.renderGrafico = function (sellers, sales, metas) {
         }]
     };
 
-    new Chart(chBar, {
+    window.myBar = new Chart(chBar, {
         type: 'bar',
         data: chartData,
         options: {
