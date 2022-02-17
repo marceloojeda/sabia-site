@@ -79,9 +79,9 @@
                 <div class="card-body">
                     <canvas id="chBar"></canvas>
                 </div>
-                <!-- <div class="card-footer text-muted">
-                    
-                </div> -->
+                <div class="card-footer text-muted">
+                    Meta de vendas por vendedor: {{ $headAlert['metas']['seller']['billets_goal'] }}
+                </div>
             </div>
         </div>
     </div>

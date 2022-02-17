@@ -94,9 +94,16 @@ class HomeController extends BaseController
         $calendarTeam = Calendar::where('is_active', true)
             ->where('id', $semanaId)
             ->first();
+
+        $semanaId = env('SEMANA_ATUAL_SELLER');
+        $calendarSeller = Calendar::where('is_active', true)
+            ->where('id', $semanaId)
+            ->first();
+            
         $retorno['metas'] = [
             'adm' => $calendarAdm->toArray(),
             'team' => $calendarTeam->toArray(),
+            'seller' => $calendarSeller->toArray(),
         ];
 
         $retorno['metas']['team']['billets_actual'] = $this->teamPerformanceCalculate($request->user());
