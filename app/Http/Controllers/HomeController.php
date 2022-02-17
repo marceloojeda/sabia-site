@@ -99,7 +99,7 @@ class HomeController extends BaseController
             'team' => $calendarTeam->toArray(),
         ];
 
-        $retorno['metas']['team']['billets_actual'] = $this->teamPerformanceCalculate($request->user()->id);
+        $retorno['metas']['team']['billets_actual'] = $this->teamPerformanceCalculate($request->user());
 
         return $retorno;
     }
@@ -138,7 +138,7 @@ class HomeController extends BaseController
         return $retorno;
     }
 
-    private function teamPerformanceCalculate($headId)
+    private function teamPerformanceCalculate($head)
     {
         $semanaId = env('SEMANA_ATUAL_HEAD');
         $calendarTeam = Calendar::where('is_active', true)
@@ -151,7 +151,7 @@ class HomeController extends BaseController
         
         $heads = User::where('type', 'Coordenador')
             ->where('is_active', true)
-            ->where('id', $headId)
+            ->where('id', $head->id)
             ->get();
 
         $arrHeads = $heads->toArray();
@@ -164,7 +164,8 @@ class HomeController extends BaseController
 
             $totalTeam = $this->getSalesTeamPerPeriod($team->toArray(), $calendarTeam);
         }
-        $totalTeam += $this->getSalesHeadPerPeriod($head, $calendarTeam);
+        
+        $totalTeam += $this->getSalesHeadPerPeriod($head->toArray(), $calendarTeam);
 
         return $totalTeam;
     }
