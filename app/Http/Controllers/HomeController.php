@@ -64,8 +64,10 @@ class HomeController extends BaseController
         ];
 
         $sales = Sale::select("id")->get();
-        $confirmedSales = Sale::whereNotNull('amount_paid')
+        $confirmedSales = Sale::where('payment_status', 'Pago')
+            ->whereNotNull('amount_paid')
             ->whereNotNull('user_id')
+            ->whereNotNull('ticket_number')
             ->select("id")
             ->get();
 
