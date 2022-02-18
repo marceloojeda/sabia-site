@@ -20,12 +20,12 @@
         <div class="col-sm-4">
             <div class="card">
                 <div class="card-header bg-primary">
-                    <h4 class="card-title text-white">Totais da Promoção</h4>
+                    <h4 class="card-title text-white">Meta da Promoção</h4>
                 </div>
                 <div class="card-body bg-primary text-white">
                     Meta: <b>2.160</b>
                     <br>
-                    Atual: <b>{{ $headAlert['totais']['confirmados'] }} ({{ number_format($headAlert['totais']['confirmados'] / 2160 * 100, 2) }}%)</b>
+                    Realizado: <b>{{ $headAlert['totais']['confirmados'] }} ({{ number_format($headAlert['totais']['confirmados'] / 2160 * 100, 2) }}%)</b>
                 </div>
             </div>
         </div>
@@ -33,12 +33,12 @@
         <div class="col-sm-4">
             <div class="card">
                 <div class="card-header bg-warning">
-                    <h4 class="card-title text-dark">Total da Equipe</h4>
+                    <h4 class="card-title text-dark">Meta da Equipe</h4>
                 </div>
                 <div class="card-body bg-warning">
                     Meta: <b>216</b>
                     <br>
-                    Atual: <b>{{ $headAlert['totais']['equipe'] }} ({{ number_format($headAlert['totais']['equipe'] / 216 * 100, 2) }}%)</b>
+                    Realizado: <b>{{ $headAlert['totais']['equipe'] }} ({{ number_format($headAlert['totais']['equipe'] / 216 * 100, 2) }}%)</b>
                 </div>
             </div>
         </div>
@@ -59,12 +59,12 @@
         <div class="col-sm-4">
             <div class="card">
                 <div class="card-header bg-danger">
-                    <h4 class="card-title text-white">Vendas da Semana</h4>
+                    <h4 class="card-title text-white">Meta da Semana</h4>
                 </div>
                 <div class="card-body bg-danger text-white">
                     Meta: <b>{{ $headAlert['metas']['team']['billets_goal'] }}</b>
                     <br>
-                    Atual: <b>{{ $headAlert['metas']['team']['billets_actual'] }} ({{ number_format($headAlert['metas']['team']['billets_actual'] / $headAlert['metas']['team']['billets_goal'] * 100, 2) }}%)</b>
+                    Realizado: <b>{{ $headAlert['metas']['team']['billets_actual'] }} ({{ number_format($headAlert['metas']['team']['billets_actual'] / $headAlert['metas']['team']['billets_goal'] * 100, 2) }}%)</b>
                 </div>
             </div>
         </div>

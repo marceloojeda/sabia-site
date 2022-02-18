@@ -46,3 +46,5 @@ f.gomes815@gmail.com
 Larissa
 larissaferreira-mo@hotmail.com
 07693754644
+
+select count(*) as total from sales where user_id is not null and amount_paid is not null and ticket_number is not null and payment_status = 'Pago';

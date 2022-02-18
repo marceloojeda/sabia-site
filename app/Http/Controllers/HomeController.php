@@ -71,9 +71,10 @@ class HomeController extends BaseController
 
         $teamSales = Sale::getSalesPerTeam($request->user()->id);
         $headSales = Sale::getSalesOfHead($request->user()->id);
+        
         $totalEquipe = 0;
         if (!empty($teamSales[0]->vendas)) {
-            $totalEquipe = $teamSales[0]->vendas;
+            $totalEquipe = array_sum(array_column($teamSales, 'vendas'));
         }
         if (!empty($headSales[0]->vendas)) {
             $totalEquipe += $headSales[0]->vendas;
