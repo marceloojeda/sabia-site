@@ -105,6 +105,20 @@ class Sale extends Model
         return !$sales ? 0 : sizeof($sales->toArray());
     }
 
+    public static function getTotalSalesPerPeriod($beginAt, $finishAt)
+    {
+        $sales = Sale::where('created_at', '>=', $beginAt)
+            ->where('created_at', '<=', $finishAt)
+            ->whereNotNull('user_id')
+            ->whereNotNull('amount_paid')
+            ->whereNotNull('ticket_number')
+            ->where('payment_status', 'Pago')
+            ->select('sales.id')
+            ->get('id');
+
+        return !$sales ? 0 : sizeof($sales->toArray());
+    }
+
     public function getInfoSalesToAdm()
     {
         $result = DB::table('sales')
@@ -165,5 +179,10 @@ EOF;
 EOF;
 
         return DB::select($sql);
+    }
+
+    public function getWorstTeam()
+    {
+
     }
 }

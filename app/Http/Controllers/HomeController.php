@@ -34,15 +34,41 @@ class HomeController extends BaseController
             return redirect('/home');
         }
 
+        if ($request->user()->type == 'Administrador') {
+            $dashData = $this->initAdmDashboard($request);
+            return view('adm.home', compact('dashData'));
+        }
+
         $dashInfo = $this->getHeadDashInfo($request);
         $headAlert = $dashInfo;
 
-        if ($request->user()->type == 'Administrador') {
-            $headAlert = $this->getInfoSales();
-            return view('adm.home', ['headAlert' => $headAlert]);
-        }
-
         return view('home', ['headAlert' => $headAlert]);
+    }
+
+    private function initAdmDashboard(Request $request)
+    {
+        $totalSales = Sale::where('payment_status', 'Pago')
+            ->whereNotNull('amount_paid')
+            ->whereNotNull('user_id')
+            ->whereNotNull('ticket_number')
+            ->get('id');
+
+        $semanaId = env('SEMANA_ATUAL_ADM');
+        $calendarAdm = Calendar::where('is_active', true)
+            ->where('id', $semanaId)
+            ->first();
+
+        $totalSalesWeek = Sale::getTotalSalesPerPeriod($calendarAdm->begin_at, $calendarAdm->finish_at);
+        $percSalesWeek = $totalSalesWeek / $calendarAdm->billets_goal * 100;
+
+        $dashData = [
+            'totalSales' => sizeof($totalSales->toArray()),
+            'totalSalesWeek' => $totalSalesWeek,
+            'percSalesWeek' => $percSalesWeek,
+            'calendar' => $calendarAdm->toArray()
+        ];
+
+        return $dashData;
     }
 
     private function getHeadDashInfo(Request $request)
@@ -110,38 +136,6 @@ class HomeController extends BaseController
         ];
 
         $retorno['metas']['team']['billets_actual'] = $this->teamPerformanceCalculate($request->user());
-
-        return $retorno;
-    }
-
-    private function getInfoSales()
-    {
-
-        $salesModel = new Sale();
-        $retorno['sales'] = $salesModel->getInfoSalesToAdm();
-
-        $calendarIds = [env('SEMANA_ATUAL_SELLER'), env('SEMANA_ATUAL_HEAD'), env('SEMANA_ATUAL_ADM')];
-        $calendar = Calendar::where('is_active', true)
-            ->whereIn('id', $calendarIds)
-            ->get();
-
-        $metas = $calendar->toArray();
-
-        $retorno['metas'] = [
-            'seller' => $metas[0],
-            'head' => $metas[1],
-            'adm' => $metas[2]
-        ];
-
-        $teamsSales = $salesModel->getSalesPerTeam(2);
-        $arrChatInfo = [];
-        $arrChatInfo[] = [
-            'team' => '',
-            'goal' => 0,
-            'sales' => 0
-        ];
-        
-        $retorno['desempenho'] = $arrChatInfo;
 
         return $retorno;
     }
