@@ -1,5 +1,5 @@
 window.onload = function () {
-    var chBar = document.getElementById("chBar").getContext("2d");
+    var chBar = document.getElementById("chBar");
     if (chBar) {
         renderChatComparative();
     }

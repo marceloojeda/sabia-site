@@ -250,4 +250,25 @@ class TeamsController extends BaseController
 
         return !$sales ? 0 : sizeof($sales->toArray());
     }
+
+    public function sendTicketsBatch(Request $request)
+    {
+        $this->checkPerfilUsuario($request);
+
+        $arrSalesId = explode('|', $request->sales);
+
+        $arrSales = [];
+        foreach ($arrSalesId as $saleId) {
+            $arrSale = Sale::where('id', $saleId)->first()->toArray();
+            $arrSale['ticket_number'] = str_pad(strval($arrSale['ticket_number']), 4, '0', STR_PAD_LEFT);
+
+            array_push($arrSales, $arrSale);
+        }
+
+        $head = $request->user();
+        $headPhone = $head->phone;
+        $headPhone = preg_replace("/[^0-9]/", "", $headPhone);
+
+        return view('coordenador.sale_ticket', ['sales' => $arrSales, 'session' => $headPhone]);
+    }
 }

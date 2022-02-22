@@ -57,7 +57,7 @@
                     </div>
                     <div class="col-sm-4 text-center">
                         @if(!empty($sale->ticket_number))
-                        <a href="/sales/{{ $sale->id }}" class="btn btn-warning">Ticket</a>
+                        <!-- <a href="/sales/{{ $sale->id }}" class="btn btn-warning">Ticket</a> -->
                         @endif
                     </div>
                     <div class="col-sm-4">
