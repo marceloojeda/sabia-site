@@ -35,7 +35,7 @@ class MyzapController extends BaseController
             $session = $this->getUserPhone($user);
 
             if(!empty($request->input('close')) && $request->input('close') == 'true') {
-                $this->closeSession($session);
+                $this->closeSession($user, $session);
             }
 
             $serverhost = env('MYZAP_URL') . '/start';
@@ -43,8 +43,7 @@ class MyzapController extends BaseController
             $headers = [
                 'Content-Type' => 'application/json',
                 'apitoken' => $token,
-                "sessionkey" => env('MYZAP_SESSION_KEY')
-
+                "sessionkey" => $this->getSessionKey($user)
             ];
             $body = [
                 "session" => $session,
@@ -66,10 +65,32 @@ class MyzapController extends BaseController
         return strval($phone);
     }
 
-    private function closeSession($session) {
+    private function getSessionKey($user)
+    {
+        // $phone = preg_replace("/[^0-9]/", "", $user->phone);
+        // $arrName = explode(" ", $user->name);
+
+        // return strval(strtolower($arrName[0] . '_sabia'));
+
+        return env('MYZAP_SESSION_KEY');
+    }
+
+    public function close(Request $request)
+    {
+        $this->checkPerfilUsuario($request);
+
+        $user = $request->user();
+        $session = $this->getUserPhone($user);
+
+        $this->closeSession($user, $session);
+
+        return response()->noContent();
+    }
+
+    private function closeSession($user, $session) {
         $serverhost = env('MYZAP_URL') . '/logout';
         $headers = [
-            "sessionkey" => env('MYZAP_SESSION_KEY'),
+            "sessionkey" => $this->getSessionKey($user),
             'Content-Type' => 'application/json'
         ];
 
@@ -78,9 +99,10 @@ class MyzapController extends BaseController
         return $response->body();
     }
 
-    public function getQrCode($session)
+    public function getQrCode($user, $session)
     {
-        $url = sprintf("%s/getqrcode?session=%s&sessionkey=%s", env('MYZAP_URL'), $session, env('MYZAP_SESSION_KEY'));
+        $sessionKey = $this->getSessionKey($user);
+        $url = sprintf("%s/getqrcode?session=%s&sessionkey=%s", env('MYZAP_URL'), $session, $sessionKey);
 
         return response($url);
     }
@@ -96,35 +118,28 @@ class MyzapController extends BaseController
         $sellerPhone = $seller->phone;
         $sellerPhone = preg_replace("/[^0-9]/", "", $sellerPhone);
 
-        $message = '';
-        for ($i = 0; $i < 3; $i++) {
-            switch ($i) {
-                case 1:
-                    $message = $this->getDefaultText();
-                    break;
+        if(env('APP_ENV') == 'local') {
+            $sellerPhone = "6596618339";
+        }
 
-                case 2:
-                    if(env('APP_ENV') == 'local') {
-                        $message = "http://itaimbemaquinas.com.br/wp-content/uploads/sites/79/2020/07/zap-vermelho.png"; // env('MYZAP_IMG_DIR') . $sale->billet_file;    
-                    } else {
-                        $message = env('APP_URL') . '/assets/img/billets/' . $sale->billet_file;
-                    }
-                    break;
+        $hasText = $request->input('hasText') ?? true;
 
-                default:
-                    $message = '';
-                    break;
+        if($hasText) {
+            $message = $this->getDefaultText();
+            $this->sendText($request->user(), $session, $sellerPhone, $message, false);
+
+            if(env('APP_ENV') == 'local') {
+                $message = "http://itaimbemaquinas.com.br/wp-content/uploads/sites/79/2020/07/zap-vermelho.png"; // env('MYZAP_IMG_DIR') . $sale->billet_file;    
+            } else {
+                $message = env('APP_URL') . '/assets/img/billets/' . $sale->billet_file;
             }
-            
-            if (!$this->sendText($session, $sellerPhone, $message, $i === 2)) {
-                return response("Falha ao enviar mensagem no whatsapp", 500);
-            }
+            $this->sendText($request->user(), $session, $sellerPhone, $message, true);
         }
 
         return response("Mensagem enviada com sucesso");
     }
 
-    private function sendText($session, $sellerPhone, $message, $isFile = false)
+    private function sendText($user, $session, $sellerPhone, $message, $isFile = false)
     {
         if(empty($message)) {
             return true;
@@ -138,7 +153,7 @@ class MyzapController extends BaseController
         }
 
         $headers = [
-            "sessionkey" => env('MYZAP_SESSION_KEY'),
+            "sessionkey" => $this->getSessionKey($user),
             'Content-Type' => 'application/json'
         ];
 
@@ -164,7 +179,7 @@ class MyzapController extends BaseController
             dd($jsonResp->body());
         }
 
-        return $jsonResp->status() == 200;
+        return $jsonResp; //->status() == 200;
     }
 
     private function getDefaultText()

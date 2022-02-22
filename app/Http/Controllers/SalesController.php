@@ -60,6 +60,12 @@ class SalesController extends BaseController
         $salesModel = new Sale();
         $sales = $salesModel->getSquadSales($request);
 
+        foreach ($sales as $k => $sale) {
+            if(!empty($sale->ticket_number)) {
+                $sales[$k]->ticket_number = str_pad(strval($sale->ticket_number), 4, '0', STR_PAD_LEFT);
+            }
+        }
+
         $filter = [];
         if(!empty($request->buyer)) {
             $filter['buyer'] = $request->buyer;
@@ -223,13 +229,13 @@ class SalesController extends BaseController
         $saleData['payment_status'] = $sale->payment_status;
 
         $bilhetes = $saleData['amount_paid'];
-        $ticket = $this->getTicketNumber($saleData);
+        $ticket = $sale->ticket_number ?? $this->getTicketNumber($saleData);
         for ($i = 0; $i < $bilhetes; $i++) {
             $saleData['amount_paid'] = 12;
             $saleData['ticket_number'] = $ticket;
 
             $sale->update($saleData);
-            $ticket++;
+            // $ticket++;
         }
 
         return redirect('/sales');

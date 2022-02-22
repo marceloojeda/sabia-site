@@ -6,6 +6,7 @@
 @section('content')
 
 <div class="col-sm-12">
+    <input type="hidden" id="urlApp" value="{{ env('URL_APP ') }}"
     <form action="/sales/filtered" method="POST">
         <div class="row">
 
@@ -14,7 +15,7 @@
                 <label for="">Comprador</label>
                 <input type="text" class="form-control" name="buyer" id="buyer" value="{{ $filter['buyer'] ?? '' }}">
             </div>
-    
+
             <div class="col-sm-5 form-group">
                 <label for="">Vendedor</label>
                 <input type="text" class="form-control" name="seller" id="seller" value="{{ $filter['seller'] ?? '' }}">
@@ -35,6 +36,7 @@
     <thead>
         <tr>
             <th>#</th>
+            <th>Ticket</th>
             <th>Comprador</th>
             <th>Telefone</th>
             <th>Forma pagto</th>
@@ -45,17 +47,27 @@
     <tbody>
         @foreach($sales as $sale)
         <tr>
-            <td>{{ $sale->ticket_number }}</td>
-            <td>{{ $sale->buyer }}</td>
-            <td>{{ $sale->buyer_phone }}</td>
-            <td>{{ $sale->payment_method }}</td>
-            <td>{{ $sale->seller }}</td>
             <td>
-                <a class="text-muted" href="/sales/{{$sale->id}}/edit">alterar</a>
+                <input type="checkbox" data-sale="{{ $sale->id }}" aria-label="Selecione para enviar esse bilhete" class="form-control check-myzap">
+            </td>
+            <td class="align-middle">{{ strval($sale->ticket_number) }}</td>
+            <td class="align-middle">{{ $sale->buyer }}</td>
+            <td class="align-middle">{{ $sale->buyer_phone }}</td>
+            <td class="align-middle">{{ $sale->payment_method }}</td>
+            <td class="align-middle">{{ $sale->seller }}</td>
+            <td class="align-middle">
+                <a class="text-muted" href="/sales/{{$sale->id}}/edit">alterar venda</a>
             </td>
         </tr>
         @endforeach
     </tbody>
+    <tfoot>
+        <tr>
+            <td colspan="7">
+                <button class="btn btn-primary" onclick="sendTicketsBatch()">Enviar Bilhetes</button>
+            </td>
+        </tr>
+    </tfoot>
 </table>
 
 <div class="col-sm-12">
