@@ -86,7 +86,7 @@
                     <div class="col-sm-6 text-right mt-2">
                         <a href="/home" class="mr-2">Home</a>
                         <a href="/calendars" class="ml-2 mr-2">Planejamento</a>
-                        <a href="/adm/teams" class="ml-2">Equipes</a>
+                        <a href="/adm/teams" class="ml-2">Equipes e Vendas</a>
                     </div>
                 </div>
             </div>

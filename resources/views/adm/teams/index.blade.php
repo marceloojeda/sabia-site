@@ -18,26 +18,19 @@
             <td colspan="3" class="text-center">nenhuma equipe cadastrada</td>
         </tr>
         @else
-            @php
-            $head = '';
-            @endphp
             @foreach($teams as $team)
-                @if($team['head'] != $head)
-                    @php
-                    $head = $team['head'];
-                    @endphp
-                    <tr class="bg-info">
-                        <td>{{ $team['name'] }}</td>
-                        <td></td>
-                        <td class="text-right">{{ $team['billets'] }}</td>
-                    </tr>
-                @else
-                    <tr>
-                        <td>&nbsp;&nbsp;&nbsp;{{ $team['name'] }}</td>
-                        <td>{{ $team['phone'] }}</td>
-                        <td class="text-right">{{ $team['billets'] }}</td>
-                    </tr>
-                @endif
+            <tr class="bg-secondary font-weight-bold text-white">
+                <td>{{ $team['head'] }}</td>
+                <td></td>
+                <td class="text-right">{{ $team['billets'] }}</td>
+            </tr>
+                @foreach($team['team'] as $seller)
+                <tr>
+                    <td>&nbsp;&nbsp;&nbsp;{{ $seller['name'] }}</td>
+                    <td>{{ $seller['phone'] }}</td>
+                    <td class="text-right">{{ $seller['billets'] }}</td>
+                </tr>
+                @endforeach
             @endforeach
         @endif
     </tbody>

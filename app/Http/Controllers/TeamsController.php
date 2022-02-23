@@ -129,46 +129,57 @@ class TeamsController extends BaseController
 
         $teams = [];
         foreach ($heads as $k => $head) {
+            $arrName = explode(" ", $head->name);
+            $squad = [
+                'head' => 'Coordenador: ' . strtoupper($arrName[0]),
+                'billets' => 0,
+                'team' => []
+            ];
+            
             $arrHead = [
                 'id' => $head->id,
                 'name' => $head->name,
                 'phone' => $head->phone,
                 'billets' => 0,
-                'head' => $head->name
             ];
             if ($head->sales) {
                 $arrHead['billets'] = sizeof($head->sales);
+                $squad['billets'] = sizeof($head->sales);
             }
+            $squad['team'][] = $arrHead;
 
-            array_push($teams, $arrHead);
-
-            $this->getTeamFromHead($head->id, $head->name, $teams);
+            $squad['billets'] += $this->getTeamFromHead($head->id, $squad['team']);
+            
+            array_push($teams, $squad);
         }
 
         return view('adm.teams.index', compact('teams'));
     }
 
-    private function getTeamFromHead($headId, $headName, &$teams)
+    private function getTeamFromHead($headId, &$teams)
     {
         $sellers = User::where('type', 'Vendedor')
             ->where('is_active', true)
             ->where('head_id', $headId)
             ->get();
 
+        $billets = 0;
         foreach ($sellers as $k => $seller) {
             $arrSeller = [
                 'id' => $seller->id,
                 'name' => $seller->name,
                 'phone' => $seller->phone,
                 'billets' => 0,
-                'head' => $headName
             ];
             if ($seller->sales) {
                 $arrSeller['billets'] = sizeof($seller->sales);
             }
 
             array_push($teams, $arrSeller);
+            $billets += intval($arrSeller['billets']);
         }
+
+        return $billets;
     }
 
     private function checkTelefone($numeroComMascara)
