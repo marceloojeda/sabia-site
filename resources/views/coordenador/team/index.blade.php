@@ -24,7 +24,12 @@
             <tr>
                 <td>{{ $member['name'] }}</td>
                 <td>{{ $member['phone'] }}</td>
-                <td class="text-right">{{ $member['sales'] }}</td>
+                <td class="text-right">
+                    {{ $member['sales'] }}
+                    @if($member['sales'] > 0)
+                    <a href="/teams/sales-seller/{{$member['id']}}"> [ver]</a>
+                    @endif
+                </td>
                 <td class="text-right"><a href="/teams/{{ $member['id'] }}/edit">alterar cadastro</a></td>
             </tr>
             @endforeach

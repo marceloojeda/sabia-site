@@ -185,4 +185,16 @@ EOF;
     {
 
     }
+
+    public function getSellerSales($userId)
+    {
+        $sales = Sale::where('user_id', $userId)
+            ->whereNotNull('amount_paid')
+            ->where('payment_status', 'Pago')
+            ->orderBy('seller')
+            ->orderBy('id')
+            ->get();
+
+        return $sales->toArray();
+    }
 }

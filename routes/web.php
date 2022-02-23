@@ -12,6 +12,7 @@ Route::post('sales/filtered', 'SalesController@index');
 Route::resource('calendars', 'CalendarsController');
 Route::resource('teams', 'TeamsController');
 Route::get('/teams/{user}/remove', 'TeamsController@removeSeller');
+Route::get('/teams/sales-seller/{user}', 'TeamsController@salesOfMember');
 
 Route::get('/', function() {
     return response()->redirectToIntended('/home');
@@ -25,6 +26,7 @@ Route::get('/myzap/send-ticket/{sale}', 'MyzapController@sendTicket');
 Route::post('/myzap/store-billet', 'MyzapController@storeBillet');
 
 Route::get('/adm/teams', 'TeamsController@indexToAdm');
+Route::get('/adm/teams/sales-seller/{user}', 'TeamsController@salesOfSeller');
 Route::get('/team/get-performance', 'TeamsController@getPerformance');
 Route::get('/team/send-ticket-batch', 'TeamsController@sendTicketsBatch');
 Route::get('/adm/desempenho', 'HomeController@getDesempenho');

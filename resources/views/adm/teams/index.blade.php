@@ -28,7 +28,14 @@
                 <tr>
                     <td>&nbsp;&nbsp;&nbsp;{{ $seller['name'] }}</td>
                     <td>{{ $seller['phone'] }}</td>
-                    <td class="text-right">{{ $seller['billets'] }}</td>
+                    <td class="text-right">
+                        @if($seller['billets'] <= 0)
+                        {{ $seller['billets'] }}
+                        @else
+                        {{ $seller['billets'] }}
+                        <a href="/adm/teams/sales-seller/{{ $seller['id'] }}"> [ver]</a>
+                        @endif
+                    </td>
                 </tr>
                 @endforeach
             @endforeach

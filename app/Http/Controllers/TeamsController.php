@@ -282,4 +282,30 @@ class TeamsController extends BaseController
 
         return view('coordenador.sale_ticket', ['sales' => $arrSales, 'session' => $headPhone]);
     }
+
+    public function salesOfSeller(Request $request, User $user)
+    {
+        $saleModel = new Sale();
+
+        $sales = $saleModel->getSellerSales($user->id);
+        foreach ($sales as $k => $sale) {
+            $sales[$k]['created_at'] = date('d/m/Y H:i', strtotime($sale['created_at']));
+            $sales[$k]['ticket_number'] = str_pad($sale['ticket_number'], 4, '0', STR_PAD_LEFT); 
+        }
+
+        return view('adm.teams.sales_seller', compact('sales'));
+    }
+
+    public function salesOfMember(Request $request, User $user)
+    {
+        $saleModel = new Sale();
+
+        $sales = $saleModel->getSellerSales($user->id);
+        foreach ($sales as $k => $sale) {
+            $sales[$k]['created_at'] = date('d/m/Y H:i', strtotime($sale['created_at']));
+            $sales[$k]['ticket_number'] = str_pad($sale['ticket_number'], 4, '0', STR_PAD_LEFT); 
+        }
+
+        return view('coordenador.team.sales_member', compact('sales'));
+    }
 }
