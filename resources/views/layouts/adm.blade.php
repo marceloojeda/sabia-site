@@ -82,6 +82,8 @@
                 <div class="row">
                     <div class="col-sm-6">
                         <h2>@yield('page_title')</h2>
+                        <input type="hidden" id="urlApp" value="{{ env('APP_URL') }}">
+                        <input type="hidden" id="panelName" value="ADMINISTRADOR">
                     </div>
                     <div class="col-sm-6 text-right mt-2">
                         <a href="/home" class="mr-2">Home</a>
@@ -102,10 +104,6 @@
     <script type="text/javascript" src="/assets/js/adm.js"></script> -->
 
     <script type="text/javascript" src="/js/app.js"></script>
-
-    <script>
-    renderChatDesempenho();
-</script>
 
 </body>
 

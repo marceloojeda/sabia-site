@@ -2,44 +2,97 @@ window.redirectTo = function (url) {
     window.location.href = url;
 }
 
-window.renderChatDesempenho = function () {
+window.getTeamPerformanceData = async function () {
+    const urlApp = document.getElementById('urlApp').value + '/adm/get-teams-performance';
 
-    var chBar = document.getElementById("grafico-desempenho");
-    if (!chBar) {
-        return;
-    }
+    let performanceData = $.get(urlApp, function (result) {
+        performanceData = result;
+    });
 
-    let teams = [];
-    let sales = [];
-    $.get('http://promocao.test/adm/desempenho', function (result) {
-        teams = result.map((el) => { return el.team; });
-        sales = result.map((el) => { return el.sales; });
+    return performanceData;
+}
 
-        var chartData = {
-            labels: teams,
-            datasets: [{
-                data: sales,
-                label: 'Equipes'
-            }]
-        };
+window.renderGraficoDesempenhoTimes = async function (chBar) {
+    getTeamPerformanceData()
+        .then((data) => {
+            let sellers = data.map(function (member) {
+                return member.head;
+            });
 
-        new Chart(chBar, {
-            type: 'bar',
-            data: chartData,
-            options: {
-                scales: {
-                    yAxes: [{
-                        ticks: {
-                            beginAtZero: false
-                        }
-                    }]
-                },
-                legend: {
-                    display: false
-                }
-            }
+            let sales = data.map(function (member) {
+                return member.vendas;
+            });
+
+            let metas = data.map(function (member) {
+                return member.meta;
+            });
+
+            renderGraficoTimes(sellers, sales, metas, chBar);
+
         });
-    })
+}
 
+window.renderGraficoTimes = function (sellers, sales, metas, chBar) {
+    // chart colors
+    var colors = ['#007bff', '#28a745', '#333333', '#c3e6cb', '#dc3545', '#6c757d'];
 
+    var chartData = {
+        labels: sellers,
+        datasets: [{
+            type: 'bar',
+            data: sales,
+            fill: false,
+            backgroundColor: colors[1],
+            label: 'Equipe',
+            yAxisID: 'y-axis-1'
+        }
+        // {
+        //     type: 'line',
+        //     data: metas,
+        //     fill: false,
+        //     label: 'Meta Semana',
+        //     borderColor: colors[0],
+        //     backgroundColor: colors[0],
+        //     pointBorderColor: colors[0],
+        //     pointBackgroundColor: colors[0],
+        //     pointHoverBackgroundColor: colors[0],
+        //     pointHoverBorderColor: colors[0],
+        //     yAxisID: 'y-axis-2'
+        // }
+        ]
+    };
+
+    window.myBar = new Chart(chBar, {
+        type: 'bar',
+        data: chartData,
+        options: {
+            responsive: true,
+            tooltips: {
+                mode: 'label'
+            },
+            elements: {
+                line: {
+                    fill: false
+                }
+            },
+            scales: {
+                yAxes: [{
+                    display: true,
+                    gridLines: {
+                        display: false
+                    },
+                    labels: {
+                        show: true,
+
+                    }
+                }]
+            }
+        }
+    });
+}
+
+window.sellerDelete = function (seller) {
+    if (confirm('Confirma exclusão desse membro da sua equipe?')) {
+        window.location.href = "/teams/" + seller + '/remove';
+    }
 }

@@ -29,4 +29,4 @@ Route::get('/adm/teams', 'TeamsController@indexToAdm');
 Route::get('/adm/teams/sales-seller/{user}', 'TeamsController@salesOfSeller');
 Route::get('/team/get-performance', 'TeamsController@getPerformance');
 Route::get('/team/send-ticket-batch', 'TeamsController@sendTicketsBatch');
-Route::get('/adm/desempenho', 'HomeController@getDesempenho');
+Route::get('/adm/get-teams-performance', 'TeamsController@getTeamsPerformance');

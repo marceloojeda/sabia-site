@@ -231,7 +231,7 @@ class TeamsController extends BaseController
 
         $retorno = [];
         $retorno[] = [
-            'seller' => $request->user()->name,
+            'seller' => ucfirst(explode(" ", $request->user()->name)[0]),
             'vendas' => $this->getTotalSalesFromSeller($request->user()->id),
             'meta' => $meta
         ];
@@ -242,9 +242,34 @@ class TeamsController extends BaseController
 
         foreach ($team as $member) {
             $retorno[] = [
-                'seller' => $member->name,
+                'seller' => ucfirst(strtolower(explode(" ", $member->name)[0])),
                 'vendas' => $this->getTotalSalesFromSeller($member->id),
                 'meta' => $meta
+            ];
+        }
+
+        return response()->json($retorno);
+    }
+
+    public function getTeamsPerformance(Request $request)
+    {
+        $heads = User::where('is_active', true)
+            ->where('type', 'Coordenador')
+            ->get()
+            ->toArray();
+
+        $retorno = [];
+        foreach ($heads as $k => $head) {
+            $headName = explode(" ", $head['name'])[0];
+            
+            if(strpos($headName, 'Demo') !== false || strpos($headName, 'Equipe') !== false) {
+                continue;
+            }
+
+            $retorno[] = [
+                'head' => $headName,
+                'vendas' => $this->getSalesTeam($head['id']),
+                'meta' => 88
             ];
         }
 
@@ -307,5 +332,19 @@ class TeamsController extends BaseController
         }
 
         return view('coordenador.team.sales_member', compact('sales'));
+    }
+
+    private function getSalesTeam($headId)
+    {
+        $vendas = 0;
+        $salesTeam = Sale::getSalesPerTeam($headId);
+        foreach ($salesTeam as $item) {
+            $vendas += $item->vendas;
+        }
+        
+        $salesHead = Sale::getSalesOfHead($headId);
+        $vendas += $salesHead[0]->vendas ?? 0;
+        
+        return $vendas;
     }
 }

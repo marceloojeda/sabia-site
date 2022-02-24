@@ -47,13 +47,13 @@
 
 </div>
 
-<!-- <div class="card">
+<div class="card">
     <div class="card-header">
-        <h3 class="card-title">Desempenho das Equipes</h3>
+        <h4 class="card-title">Desempenho das Equipes</h4>
     </div>
     <div class="card-body">
-        <canvas id="grafico-desempenho"></canvas>
+        <canvas id="grafico-desempenho-times"></canvas>
     </div>
-</div> -->
+</div>
 
 @endsection

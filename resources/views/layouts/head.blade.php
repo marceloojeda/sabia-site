@@ -82,6 +82,7 @@
                 <div class="row">
                     <div class="col-sm-6">
                         <h2>Painel do Coordenador</h2>
+                        <input type="hidden" id="panelName" value="COORDENADOR">
                     </div>
                     <div class="col-sm-6 text-right mt-2">
                         <a href="/home" class="mr-2">Home</a>

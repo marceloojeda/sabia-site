@@ -169,21 +169,15 @@ EOF;
     public static function getSalesOfHead($headId)
     {
         $sql = <<<EOF
-        select count(s.id) as vendas, u.name as seller
-        from sales s join users u on s.user_id = u.id 
-        where s.user_id is not null
-        and s.amount_paid is not null
+        select count(s.id) as vendas, s.seller as seller
+        from sales s
+        where s.amount_paid is not null
         and s.payment_status = 'Pago'
         and s.user_id = $headId
-        group by u.name;
+        group by s.seller;
 EOF;
 
         return DB::select($sql);
-    }
-
-    public function getWorstTeam()
-    {
-
     }
 
     public function getSellerSales($userId)

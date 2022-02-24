@@ -1,11 +1,20 @@
 window.onload = function () {
-    var chBar = document.getElementById("chBar");
-    if (chBar) {
+    const panelName = document.getElementById('panelName');
+    if(!panelName) {
+        return
+    }
+
+    let chBar = document.getElementById("chBar");
+    if (panelName.value == 'ADMINISTRADOR') {
+        chBar = document.getElementById("grafico-desempenho-times");
+        renderGraficoDesempenhoTimes(chBar);
+        return;
+    } else {
         renderChatComparative();
     }
 };
 
-window.getTeamPerformanceData = async function () {
+window.getPerformanceData = async function () {
     const urlApp = document.getElementById('urlApp').value + '/team/get-performance';
 
     let performanceData = $.get(urlApp, function (result) {
@@ -16,7 +25,7 @@ window.getTeamPerformanceData = async function () {
 }
 
 window.renderChatComparative = async function () {
-    getTeamPerformanceData()
+    getPerformanceData()
         .then((data) => {
             let sellers = data.map(function (member) {
                 return member.seller;
