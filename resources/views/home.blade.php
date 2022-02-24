@@ -30,7 +30,7 @@
             </div>
         </div> -->
 
-        <div class="col-sm-6">
+        <div class="col-sm-4">
             <div class="card">
                 <div class="card-header bg-info">
                     <h4 class="card-title text-dark">Meta da Equipe</h4>
@@ -43,12 +43,25 @@
             </div>
         </div>
 
-        <div class="col-sm-6">
+        <div class="col-sm-4">
             <div class="card">
                 <div class="card-header bg-warning">
-                    <h4 class="card-title">Meta da Semana</h4>
+                    <h4 class="card-title">Acumulado das Metas</h4>
                 </div>
                 <div class="card-body bg-warning">
+                    Meta: <b>{{ $headAlert['metas']['accumulated']['meta'] }}</b>
+                    <br>
+                    Realizado: <b>{{ $headAlert['metas']['accumulated']['realizado'] }} ({{ number_format($headAlert['metas']['accumulated']['realizado'] / $headAlert['metas']['accumulated']['meta'] * 100, 2) }}%)</b>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-4">
+            <div class="card">
+                <div class="card-header bg-danger">
+                    <h4 class="card-title text-white">Meta da Semana</h4>
+                </div>
+                <div class="card-body bg-danger text-white">
                     Meta: <b>{{ $headAlert['metas']['team']['billets_goal'] }}</b>
                     <br>
                     Realizado: <b>{{ $headAlert['metas']['team']['billets_actual'] }} ({{ number_format($headAlert['metas']['team']['billets_actual'] / $headAlert['metas']['team']['billets_goal'] * 100, 2) }}%)</b>

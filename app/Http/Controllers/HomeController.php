@@ -128,11 +128,14 @@ class HomeController extends BaseController
         $calendarSeller = Calendar::where('is_active', true)
             ->where('id', $semanaId)
             ->first();
+
+        $acumulado = $this->getAcumuladoMetas($request);
             
         $retorno['metas'] = [
             'adm' => $calendarAdm->toArray(),
             'team' => $calendarTeam->toArray(),
             'seller' => $calendarSeller->toArray(),
+            'accumulated' => $acumulado
         ];
 
         $retorno['metas']['team']['billets_actual'] = $this->teamPerformanceCalculate($request->user());
@@ -187,6 +190,59 @@ class HomeController extends BaseController
     {
         $saleModel = new Sale();
         $total = $saleModel->getTeamSalesPerPeriod($calendar->begin_at, $calendar->finish_at,  $head['id']);
+
+        return $total;
+    }
+
+    private function getAcumuladoMetas(Request $request, $isMetaTeams = true)
+    {
+        $semanaId = env('SEMANA_ATUAL_HEAD');
+        $weeks = Calendar::where('is_active', true)
+            ->where('audience', 'Coordenadores')
+            ->where('id', '<=', $semanaId)
+            ->get();
+
+        $team = $this->getTeam($request);
+
+        $acumulado = [
+            'meta' => 0,
+            'realizado' => 0
+        ];
+        foreach ($weeks as $week) {
+            $weekSales = Sale::where('payment_status', 'Pago')
+                ->where('created_at', '>=', $week->begin_at)
+                ->where('created_at', '<=', $week->finish_at)
+                ->whereNotNull('amount_paid')
+                ->whereNotNull('user_id')
+                ->whereNotNull('ticket_number')
+                ->select(['id', 'user_id'])
+                ->get();
+            
+            $acumulado['meta'] += intval($week->billets_goal);
+            $acumulado['realizado'] += intval($this->getTotalSales($team, $weekSales->toArray()));
+        }
+
+        return $acumulado;
+    }
+
+    private function getTeam(Request $request)
+    {
+        $model = new User();
+        $arrSellers = $model->getTeam($request->user());
+
+        return $arrSellers;
+    }
+
+    private function getTotalSales(array $arrSellers, array $weekSales)
+    {
+        $arrSellerIds = array_column($arrSellers, 'id');
+        $total = 0;
+        foreach ($weekSales as $sale) {
+            if(!in_array($sale['user_id'], $arrSellerIds)) {
+                continue;
+            }
+            $total++;
+        }
 
         return $total;
     }
