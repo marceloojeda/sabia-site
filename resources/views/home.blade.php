@@ -46,7 +46,7 @@
         <div class="col-sm-4">
             <div class="card">
                 <div class="card-header bg-warning">
-                    <h4 class="card-title">Acumulado das Metas</h4>
+                    <h4 class="card-title">Acumulado das Semanas</h4>
                 </div>
                 <div class="card-body bg-warning">
                     Meta: <b>{{ $headAlert['metas']['accumulated']['meta'] }}</b>
@@ -59,7 +59,7 @@
         <div class="col-sm-4">
             <div class="card">
                 <div class="card-header bg-danger">
-                    <h4 class="card-title text-white">Meta da Semana</h4>
+                    <h4 class="card-title text-white">Meta Semana Atual</h4>
                 </div>
                 <div class="card-body bg-danger text-white">
                     Meta: <b>{{ $headAlert['metas']['team']['billets_goal'] }}</b>

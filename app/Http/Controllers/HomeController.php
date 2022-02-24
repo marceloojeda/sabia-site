@@ -102,7 +102,7 @@ class HomeController extends BaseController
         
         $totalEquipe = 0;
         if (!empty($teamSales[0]->vendas)) {
-            $totalEquipe = array_sum(array_column($teamSales, 'vendas'));
+            $totalEquipe += array_sum(array_column($teamSales, 'vendas'));
         }
         if (!empty($headSales[0]->vendas)) {
             $totalEquipe += $headSales[0]->vendas;
@@ -211,7 +211,7 @@ class HomeController extends BaseController
         foreach ($weeks as $week) {
             $weekSales = Sale::where('payment_status', 'Pago')
                 ->where('created_at', '>=', $week->begin_at)
-                ->where('created_at', '<=', $week->finish_at)
+                ->where('created_at', '<=', date('Y-m-d 23:59:59', strtotime($week->finish_at)))
                 ->whereNotNull('amount_paid')
                 ->whereNotNull('user_id')
                 ->whereNotNull('ticket_number')
@@ -219,7 +219,7 @@ class HomeController extends BaseController
                 ->get();
             
             $acumulado['meta'] += intval($week->billets_goal);
-            $acumulado['realizado'] += intval($this->getTotalSales($team, $weekSales->toArray()));
+            $acumulado['realizado'] += $this->getTotalSales($team, $weekSales->toArray());
         }
 
         return $acumulado;

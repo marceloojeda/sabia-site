@@ -157,6 +157,7 @@ class Sale extends Model
         from sales s join users u on s.user_id = u.id 
         join users h on u.head_id = h.id 
         where s.user_id is not null
+        and s.ticket_number is not null
         and s.amount_paid is not null
         and s.payment_status = 'Pago'
         and u.head_id = $headId
@@ -172,6 +173,7 @@ EOF;
         select count(s.id) as vendas, s.seller as seller
         from sales s
         where s.amount_paid is not null
+        and s.ticket_number is not null
         and s.payment_status = 'Pago'
         and s.user_id = $headId
         group by s.seller;
