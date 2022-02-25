@@ -193,4 +193,35 @@ EOF;
 
         return $sales->toArray();
     }
+
+    public function teamRanking(Calendar $calendar)
+    {
+        $heads = User::where('is_active', true)
+            ->where('type', 'Coordenador')
+            ->whereNotIn('id', [12,40])
+            ->get();
+
+        $userModel = new User();
+        $retorno = [];
+        foreach ($heads as $head) {
+            $sellers = $userModel->getTeam($head);
+            $arrSellerIds = array_column($sellers, 'id');
+            
+            $sales = Sale::where('payment_status', 'Pago')
+                ->whereNotNull('amount_paid')
+                ->whereNotNull('ticket_number')
+                ->whereIn('user_id', $arrSellerIds)
+                ->where('created_at', '>=', $calendar->begin_at)
+                ->where('created_at', '<=', date('Y-m-d 23:59:59', strtotime($calendar->finish_at)))
+                ->get('id');
+
+            $headName = ucfirst(strtolower(explode(" ", $head->name)[0]));
+            $retorno[] = [
+                'head' => $headName,
+                'sales' => sizeof($sales->toArray())
+            ];
+        }
+
+        return $retorno;
+    }
 }

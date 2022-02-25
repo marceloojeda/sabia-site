@@ -68,6 +68,10 @@ class HomeController extends BaseController
             'calendar' => $calendarAdm->toArray()
         ];
 
+        $acumulado = $this->getAcumuladoMetas($request);
+            
+        $dashData['metas']['accumulated'] = $acumulado;
+
         return $dashData;
     }
 

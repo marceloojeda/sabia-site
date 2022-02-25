@@ -54,6 +54,16 @@
     <div class="card-body">
         <canvas id="grafico-desempenho-times"></canvas>
     </div>
+    <div class="card-footer text-center">
+        Meta Acumulada: {{ $dashData['metas']['accumulated']['meta'] }}
+    </div>
 </div>
+
+<div class="row mt-4" id="rankingBox">
+    
+</div>
+
+
+
 
 @endsection

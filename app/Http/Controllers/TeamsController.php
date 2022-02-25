@@ -347,4 +347,27 @@ class TeamsController extends BaseController
         
         return $vendas;
     }
+
+    public function getWeeksRanking()
+    {
+        $semanaId = env('SEMANA_ATUAL_HEAD');
+        $weeks = Calendar::where('is_active', true)
+            ->where('audience', 'Coordenadores')
+            ->where('id', '<=', $semanaId)
+            ->get();
+
+        $saleModel = new Sale();
+        $retorno = [];
+        foreach ($weeks as $week) {
+            $retorno[] = [
+                'id' => $week->id,
+                'title' => $week->title,
+                'meta' => $week->billets_goal,
+                'ranking' => $saleModel->teamRanking($week)
+            ];
+        }
+
+        $view = view('adm.teams.partial_ranking', ['rankingData' => $retorno])->render();
+        return response()->json(['status' => 200, 'view' => $view]);
+    }
 }

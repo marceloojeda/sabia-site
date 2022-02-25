@@ -28,4 +28,5 @@ class Calendar extends Model
 
     protected $dates = ['deleted_at', 'begin_at', 'finish_at'];
     protected $casts = ['is_active' => 'boolean'];
+
 }
