@@ -54,3 +54,7 @@ janefatureto@uol.com.br
 Samira
 samira_ptc@yahoo.com.br
 06640275635
+
+Fabi Reis
+fabianareis91@outlook.com
+10240943678

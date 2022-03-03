@@ -89,6 +89,13 @@
                         <a href="/home" class="mr-2">Home</a>
                         <a href="/calendars" class="ml-2 mr-2">Planejamento</a>
                         <a href="/adm/teams" class="ml-2">Equipes e Vendas</a>
+                        <a class="ml-2" href="{{ route('adm.buyers') }}" onclick="event.preventDefault(); document.getElementById('buyerList-form').submit();">
+                            Checagem de Vendas
+                        </a>
+
+                        <form id="buyerList-form" action="{{ route('adm.buyers') }}" method="POST" class="d-none">
+                            @csrf
+                        </form>
                     </div>
                 </div>
             </div>

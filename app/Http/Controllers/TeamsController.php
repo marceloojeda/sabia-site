@@ -370,4 +370,52 @@ class TeamsController extends BaseController
         $view = view('adm.teams.partial_ranking', ['rankingData' => $retorno])->render();
         return response()->json(['status' => 200, 'view' => $view]);
     }
+
+    public function buyerList(Request $request)
+    {
+        $filter = $request->except('_token');
+
+        if(empty($filter)) {
+            return view('adm.teams.sales_buyer', [
+                'filter' => $filter,
+                'sales' => []
+            ]);
+        }
+
+        $sql = Sale::where('payment_status', 'Pago')
+            ->whereNotNull('amount_paid')
+            ->whereNotNull('ticket_number')
+            ->whereNotNull('user_id');
+        
+        $this->setFilter($sql, $filter);
+
+        $sales = $sql->get()->toArray();
+
+        foreach ($sales as $k => $sale) {
+            $sales[$k]['created_at'] = $this->toDateBr($sale['created_at']);
+        }
+
+        return view('adm.teams.sales_buyer', [
+            'filter' => $filter,
+            'sales' => $sales
+        ]);
+    }
+
+    private function setFilter(&$sql, array $filter)
+    {
+        if(!empty($filter['seller'])) {
+            $sql->where('seller', 'like', '%'.$filter['seller'].'%');
+        }
+        if(!empty($filter['buyer'])) {
+            $sql->where('buyer', 'like', '%'.$filter['buyer'].'%');
+        }
+        if(!empty($filter['data_inicio'])) {
+            $dataInicio = $this->toDate($filter['data_inicio']) . ' 00:00:00';
+            $sql->where('created_at', '>=', $dataInicio);
+        }
+        if(!empty($filter['data_fim'])) {
+            $dataFim = $this->toDate($filter['data_fim']) . ' 23:59:59';
+            $sql->where('created_at', '>=', $dataFim);
+        }
+    }
 }

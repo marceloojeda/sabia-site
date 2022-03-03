@@ -26,6 +26,7 @@ Route::get('/myzap/send-ticket/{sale}', 'MyzapController@sendTicket');
 Route::post('/myzap/store-billet', 'MyzapController@storeBillet');
 
 Route::get('/adm/teams', 'TeamsController@indexToAdm');
+Route::post('/adm/buyers', 'TeamsController@buyerList')->name('adm.buyers');
 Route::get('/adm/teams/sales-seller/{user}', 'TeamsController@salesOfSeller');
 Route::get('/team/get-performance', 'TeamsController@getPerformance');
 Route::get('/team/send-ticket-batch', 'TeamsController@sendTicketsBatch');
