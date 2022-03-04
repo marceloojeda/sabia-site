@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Sale;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use stdClass;
 
 class SalesController extends BaseController
@@ -61,16 +62,16 @@ class SalesController extends BaseController
         $sales = $salesModel->getSquadSales($request);
 
         foreach ($sales as $k => $sale) {
-            if(!empty($sale->ticket_number)) {
+            if (!empty($sale->ticket_number)) {
                 $sales[$k]->ticket_number = str_pad(strval($sale->ticket_number), 4, '0', STR_PAD_LEFT);
             }
         }
 
         $filter = [];
-        if(!empty($request->buyer)) {
+        if (!empty($request->buyer)) {
             $filter['buyer'] = $request->buyer;
         }
-        if(!empty($request->seller)) {
+        if (!empty($request->seller)) {
             $filter['seller'] = $request->seller;
         }
 
@@ -114,26 +115,26 @@ class SalesController extends BaseController
     public function store(Request $request)
     {
         $this->checkPerfilUsuario($request);
-        
+
         $request['is_ecommerce'] = strval($request['is_ecommerce']) === "true";
         $this->validate($request, $this->rulesStore());
-        
+
         $saleData = $request->except(['_token']);
-        
+
         //caso a venda seja do proprio coordenador
-        if($saleData['user_id'] == $request->user()->id) {
+        if ($saleData['user_id'] == $request->user()->id) {
             $saleData['seller'] = $request->user()->name;
         } else {
             $saleData['seller'] = $this->getVendedor($saleData['user_id'])->name;
         }
-        
+
         $bilhetes = $saleData['amount_paid'];
         $ticket = $this->getTicketNumber($saleData);
         $sales = [];
         for ($i = 0; $i < $bilhetes; $i++) {
             $saleData['amount_paid'] = 12;
             $saleData['ticket_number'] = $ticket;
-            
+
             $obj = Sale::create($saleData);
             $obj->refresh();
             $ticket++;
@@ -153,12 +154,28 @@ class SalesController extends BaseController
 
     private function getTicketNumber($saleData)
     {
-        $number = null;
-        if ($saleData['payment_status'] === 'Pago' && empty($saleData['ticket_number'])) {
+        $number = $this->getNumberAvailable();
+        if (!$number && $saleData['payment_status'] === 'Pago' && empty($saleData['ticket_number'])) {
             while (!$number) {
                 $number = Sale::getLastTicket() + 1;
             }
         }
+        return $number;
+    }
+
+    private function getNumberAvailable()
+    {
+        $arrNumbers = Sale::getNumberAvailable();
+
+        if(empty($arrNumbers)) {
+            return null;
+        }
+
+        $index = array_rand($arrNumbers);
+        $number = $arrNumbers[$index]->number;
+
+        DB::update('update billets_control set available = ? where number = ?', [false, $number]);
+
         return $number;
     }
 
@@ -173,7 +190,7 @@ class SalesController extends BaseController
         $this->checkPerfilUsuario($request);
 
         $arrSale = $sale->toArray();
-        if(!empty($sale->ticket_number)) {
+        if (!empty($sale->ticket_number)) {
             $arrSale['ticket_number'] = str_pad(strval($sale->ticket_number), 4, '0', STR_PAD_LEFT);
         }
 
@@ -184,7 +201,7 @@ class SalesController extends BaseController
         $headPhone = $head->phone;
         $headPhone = preg_replace("/[^0-9]/", "", $headPhone);
 
-        return view('coordenador.sale_ticket', ['sales' => $sales, 'session' => $headPhone ]);
+        return view('coordenador.sale_ticket', ['sales' => $sales, 'session' => $headPhone]);
     }
 
     /**
@@ -221,7 +238,7 @@ class SalesController extends BaseController
         $saleData = $request->except(['_token']);
 
         //caso a venda seja do proprio coordenador
-        if($saleData['user_id'] == $request->user()->id) {
+        if ($saleData['user_id'] == $request->user()->id) {
             $saleData['seller'] = $request->user()->name;
         } else {
             $saleData['seller'] = $this->getVendedor($saleData['user_id'])->name;
@@ -252,5 +269,33 @@ class SalesController extends BaseController
         $sale->delete();
 
         return redirect('/sales');
+    }
+
+    public function checkBilhetesInutilizados()
+    {
+        $numbersAvailable = [];
+        for ($i = 1; $i <= 2816; $i++) {
+            $sale = Sale::where('payment_status', 'Pago')
+                ->whereNotNull('amount_paid')
+                ->whereNotNull('user_id')
+                ->where('ticket_number', $i)
+                ->select('id')
+                ->first();
+
+            if(!$sale) {
+                array_push($numbersAvailable, $i);
+            }
+        }
+
+        $this->makeBillets($numbersAvailable);
+
+        return response("Numeros disponiveis atualizados");
+    }
+
+    private function makeBillets(array $numbersAvailable)
+    {
+        foreach ($numbersAvailable as $number) {
+            $result = DB::insert('insert into billets_control (number) values (?)', [$number]);
+        }
     }
 }

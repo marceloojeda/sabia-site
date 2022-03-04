@@ -224,4 +224,14 @@ EOF;
 
         return $retorno;
     }
+
+    public static function getNumberAvailable()
+    {
+        $numbers = DB::table('billets_control')
+            ->where('available', true)
+            ->select('number')
+            ->get();
+
+        return $numbers->toArray();
+    }
 }

@@ -32,3 +32,5 @@ Route::get('/team/get-performance', 'TeamsController@getPerformance');
 Route::get('/team/send-ticket-batch', 'TeamsController@sendTicketsBatch');
 Route::get('/adm/get-teams-performance', 'TeamsController@getTeamsPerformance');
 Route::get('/adm/get-teams-ranking', 'TeamsController@getWeeksRanking');
+
+Route::get('/adm/check-bilhetes', 'SalesController@checkBilhetesInutilizados');
