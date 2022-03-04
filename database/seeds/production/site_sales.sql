@@ -11,7 +11,7 @@ insert into sales (is_ecommerce, payment_method, amount, amount_paid, buyer, buy
 
 
 # Dump da base
-mysqldump -u root -p udv_sabia > /var/www/data/25-fev.sql
+mysqldump -u root -p udv_sabia > /var/www/data/03-mar.sql
 
 # Copia do servidor
 sudo scp -i ojeda_ec2-sabia.pem ubuntu@52.91.174.190:/home/ubuntu/02-mar.sql /home/marcelo/Documentos/Ojeda

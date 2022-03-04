@@ -131,6 +131,7 @@ class SalesController extends BaseController
         $bilhetes = $saleData['amount_paid'];
         $ticket = $this->getTicketNumber($saleData);
         $sales = [];
+        $arrSalesId = [];
         for ($i = 0; $i < $bilhetes; $i++) {
             $saleData['amount_paid'] = 12;
             $saleData['ticket_number'] = $ticket;
@@ -143,13 +144,15 @@ class SalesController extends BaseController
             $arrSale['ticket_number'] = str_pad(strval($obj->ticket_number), 4, '0', STR_PAD_LEFT);
 
             array_push($sales, $arrSale);
+            array_push($arrSalesId, $arrSale['id']);
         }
 
-        $head = $request->user();
-        $headPhone = $head->phone;
-        $headPhone = preg_replace("/[^0-9]/", "", $headPhone);
+        return redirect('/team/send-ticket-batch?sales=' . implode('|', $arrSalesId));
+        // $head = $request->user();
+        // $headPhone = $head->phone;
+        // $headPhone = preg_replace("/[^0-9]/", "", $headPhone);
 
-        return view('coordenador.sale_ticket', ['sales' => $sales, 'session' => $headPhone]);
+        // return view('coordenador.sale_ticket', ['sales' => $sales, 'session' => $headPhone]);
     }
 
     private function getTicketNumber($saleData)
