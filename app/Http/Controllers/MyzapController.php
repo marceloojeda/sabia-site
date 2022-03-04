@@ -88,6 +88,18 @@ class MyzapController extends BaseController
     }
 
     private function closeSession($user, $session) {
+        $serverhost = env('MYZAP_URL') . '/close';
+        $headers = [
+            "sessionkey" => $this->getSessionKey($user),
+            'Content-Type' => 'application/json'
+        ];
+
+        $response = Http::withHeaders($headers)->post($serverhost, ['session' => $session]);
+
+        if($response->status() != 200) {
+            return $response->body();
+        }
+
         $serverhost = env('MYZAP_URL') . '/logout';
         $headers = [
             "sessionkey" => $this->getSessionKey($user),
