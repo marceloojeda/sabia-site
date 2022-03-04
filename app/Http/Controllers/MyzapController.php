@@ -35,7 +35,7 @@ class MyzapController extends BaseController
             $session = $this->getUserPhone($user);
 
             if(!empty($request->input('close')) && $request->input('close') == 'true') {
-                // $this->closeSession($user, $session);
+                $this->closeSession($user, $session);
             }
 
             $serverhost = env('MYZAP_URL') . '/start';
@@ -88,7 +88,7 @@ class MyzapController extends BaseController
     }
 
     private function closeSession($user, $session) {
-        $serverhost = env('MYZAP_URL') . '/logout';
+        $serverhost = env('MYZAP_URL') . '/close';
         $headers = [
             "sessionkey" => $this->getSessionKey($user),
             'Content-Type' => 'application/json'
