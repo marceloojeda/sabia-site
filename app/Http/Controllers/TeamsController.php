@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Calendar;
 use App\Models\Sale;
 use App\Models\User;
+use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -50,7 +51,7 @@ class TeamsController extends BaseController
             ->select('id')
             ->get();
 
-        if(!$sales) {
+        if (!$sales) {
             return 0;
         }
 
@@ -135,7 +136,7 @@ class TeamsController extends BaseController
                 'billets' => 0,
                 'team' => []
             ];
-            
+
             $arrHead = [
                 'id' => $head->id,
                 'name' => $head->name,
@@ -149,7 +150,7 @@ class TeamsController extends BaseController
             $squad['team'][] = $arrHead;
 
             $squad['billets'] += $this->getTeamFromHead($head->id, $squad['team']);
-            
+
             array_push($teams, $squad);
         }
 
@@ -223,9 +224,9 @@ class TeamsController extends BaseController
         $calendarTeam = Calendar::where('is_active', true)
             ->where('id', $semanaId)
             ->first();
-        
+
         $meta = 0;
-        if($calendarTeam) {
+        if ($calendarTeam) {
             $meta = $calendarTeam->billets_goal;
         }
 
@@ -235,7 +236,7 @@ class TeamsController extends BaseController
             'vendas' => $this->getTotalSalesFromSeller($request->user()->id),
             'meta' => $meta
         ];
-        
+
         $team = User::where('is_active', true)
             ->where('head_id', $request->user()->id)
             ->get();
@@ -261,8 +262,8 @@ class TeamsController extends BaseController
         $retorno = [];
         foreach ($heads as $k => $head) {
             $headName = explode(" ", $head['name'])[0];
-            
-            if(strpos($headName, 'Demo') !== false || strpos($headName, 'Equipe') !== false) {
+
+            if (strpos($headName, 'Demo') !== false || strpos($headName, 'Equipe') !== false) {
                 continue;
             }
 
@@ -315,7 +316,7 @@ class TeamsController extends BaseController
         $sales = $saleModel->getSellerSales($user->id);
         foreach ($sales as $k => $sale) {
             $sales[$k]['created_at'] = date('d/m/Y H:i', strtotime($sale['created_at']));
-            $sales[$k]['ticket_number'] = str_pad($sale['ticket_number'], 4, '0', STR_PAD_LEFT); 
+            $sales[$k]['ticket_number'] = str_pad($sale['ticket_number'], 4, '0', STR_PAD_LEFT);
         }
 
         return view('adm.teams.sales_seller', compact('sales'));
@@ -328,7 +329,7 @@ class TeamsController extends BaseController
         $sales = $saleModel->getSellerSales($user->id);
         foreach ($sales as $k => $sale) {
             $sales[$k]['created_at'] = date('d/m/Y H:i', strtotime($sale['created_at']));
-            $sales[$k]['ticket_number'] = str_pad($sale['ticket_number'], 4, '0', STR_PAD_LEFT); 
+            $sales[$k]['ticket_number'] = str_pad($sale['ticket_number'], 4, '0', STR_PAD_LEFT);
         }
 
         return view('coordenador.team.sales_member', compact('sales'));
@@ -341,10 +342,10 @@ class TeamsController extends BaseController
         foreach ($salesTeam as $item) {
             $vendas += $item->vendas;
         }
-        
+
         $salesHead = Sale::getSalesOfHead($headId);
         $vendas += $salesHead[0]->vendas ?? 0;
-        
+
         return $vendas;
     }
 
@@ -375,7 +376,7 @@ class TeamsController extends BaseController
     {
         $filter = $request->except('_token');
 
-        if(empty($filter)) {
+        if (empty($filter)) {
             return view('adm.teams.sales_buyer', [
                 'filter' => $filter,
                 'sales' => []
@@ -386,7 +387,7 @@ class TeamsController extends BaseController
             ->whereNotNull('amount_paid')
             ->whereNotNull('ticket_number')
             ->whereNotNull('user_id');
-        
+
         $this->setFilter($sql, $filter);
 
         $sales = $sql->get()->toArray();
@@ -403,19 +404,69 @@ class TeamsController extends BaseController
 
     private function setFilter(&$sql, array $filter)
     {
-        if(!empty($filter['seller'])) {
-            $sql->where('seller', 'like', '%'.$filter['seller'].'%');
+        if (!empty($filter['seller'])) {
+            $sql->where('seller', 'like', '%' . $filter['seller'] . '%');
         }
-        if(!empty($filter['buyer'])) {
-            $sql->where('buyer', 'like', '%'.$filter['buyer'].'%');
+        if (!empty($filter['buyer'])) {
+            $sql->where('buyer', 'like', '%' . $filter['buyer'] . '%');
         }
-        if(!empty($filter['data_inicio'])) {
+        if (!empty($filter['data_inicio'])) {
             $dataInicio = $this->toDate($filter['data_inicio']) . ' 00:00:00';
             $sql->where('created_at', '>=', $dataInicio);
         }
-        if(!empty($filter['data_fim'])) {
+        if (!empty($filter['data_fim'])) {
             $dataFim = $this->toDate($filter['data_fim']) . ' 23:59:59';
             $sql->where('created_at', '>=', $dataFim);
         }
+    }
+
+    public function checkDuplicatesSales(Request $request)
+    {
+        $heads = User::where('is_active', true)
+            ->where('type', 'Coordenador')
+            ->whereNotIn('id', [12,40])
+            ->orderBy('name')
+            ->get();
+
+        $sales = [];
+        $headId = 0;
+        if (!empty($request->input('head'))) {
+            $saleModel = new Sale();
+            $sales = $saleModel->getDuplicateSales($request->input('head'));
+            $headId = $request->input('head');
+        }
+
+        $salesAux = $this->filterDuplicateSales($sales);
+
+        return view('adm.teams.duplicate_sales', ['heads' => $heads->toArray(), 'sales' => $salesAux, 'headId' => $headId]);
+    }
+
+    private function filterDuplicateSales($sales)
+    {
+        $seller = '';
+        $buyer = '';
+        $date = '';
+        $horaAux = new DateTime();
+
+        $retorno = [];
+        foreach ($sales as $k => $sale) {
+            
+            if ($sale->seller != $seller || $sale->buyer != $buyer || $sale->sale_date != $date) {
+                $seller = $sale->seller;
+                $buyer = $sale->buyer;
+                $date = $sale->sale_date;
+                $horaAux = DateTime::createFromFormat("Y-m-d H:i:s", $sale->created_at)->getTimestamp();                
+            }
+
+            $horaAtual = DateTime::createFromFormat("Y-m-d H:i:s", $sale->created_at)->getTimestamp();
+            $seconds = intval($horaAtual) - intval($horaAux);
+            if($seconds > 0) {
+                $sale->suspect = true;
+            }
+
+            array_push($retorno, $sale);
+        }
+
+        return $retorno;
     }
 }

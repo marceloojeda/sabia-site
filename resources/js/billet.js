@@ -57,11 +57,12 @@ window.startMyzapAsync = async function (close) {
 
 window.sendBillets = function () {
     let hasDefaultText = true;
-    const billets = [...document.querySelectorAll('.check-myzap:checked')].map((e,i,rows) => {
+    const billets = [...document.querySelectorAll('.check-myzap:checked')].map((e, i, rows) => {
         document.getElementById('btnSendTicket').setAttribute('disabled', true);
         const ticket = document.getElementById('ticket-' + e.value);
         if (ticket.getAttribute('data-hasfile') == 'false') {
             exportBillet(e.value, hasDefaultText, i + 1 === rows.length);
+            hasDefaultText = false;
         } else {
             $.get(apiUrl + "/myzap/send-ticket/" + e.value + '?session=' + myzapSession + '&hasText=' + hasDefaultText)
                 .fail((jqXHR, textStatus, errorThrown) => {
@@ -76,9 +77,7 @@ window.sendBillets = function () {
                     }
                 });
         }
-        if (i === 0) {
-            hasDefaultText = false
-        }
+        hasDefaultText = false;
     });
 }
 

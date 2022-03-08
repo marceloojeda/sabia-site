@@ -34,3 +34,4 @@ Route::get('/adm/get-teams-performance', 'TeamsController@getTeamsPerformance');
 Route::get('/adm/get-teams-ranking', 'TeamsController@getWeeksRanking');
 
 Route::get('/adm/check-bilhetes', 'SalesController@checkBilhetesInutilizados');
+Route::get('/adm/duplicate-sales', 'TeamsController@checkDuplicatesSales');

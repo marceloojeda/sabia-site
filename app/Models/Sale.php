@@ -234,4 +234,25 @@ EOF;
 
         return $numbers->toArray();
     }
+
+    public function getDuplicateSales($headId)
+    {
+        $sql = <<<EOF
+        select 
+        s.id as sale_id, s.seller, s.buyer,
+        s.ticket_number, s.created_at,
+        DATE_FORMAT(s.created_at, '%d/%m/%Y') as sale_date,
+        DATE_FORMAT(s.created_at, '%H:%i:%s') as sale_hour
+        from sales s join users u on s.user_id = u.id 
+        join users h on u.head_id = h.id 
+        where s.user_id is not null
+        and s.ticket_number is not null
+        and s.amount_paid is not null
+        and s.payment_status = 'Pago'
+        and u.head_id = $headId
+        order by s.id
+EOF;
+
+        return DB::select($sql);
+    }
 }

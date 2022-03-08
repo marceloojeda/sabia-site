@@ -174,3 +174,8 @@ window.renderRankingChart = function(canvasId, canvasData) {
         }
     });
 }
+
+window.getDuplicateSales = function() {
+    const head = document.getElementById('head');
+    redirectTo('/adm/duplicate-sales?head=' + head.value);
+}

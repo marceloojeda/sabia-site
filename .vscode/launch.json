@@ -33,7 +33,7 @@
                 "-dxdebug.mode=debug",
                 "-dxdebug.start_with_request=yes",
                 "-S",
-                "localhost:0"
+                "http://promocao.test:80"
             ],
             "program": "",
             "cwd": "${workspaceRoot}",

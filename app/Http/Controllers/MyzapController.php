@@ -130,11 +130,14 @@ class MyzapController extends BaseController
         $sellerPhone = $seller->phone;
         $sellerPhone = preg_replace("/[^0-9]/", "", $sellerPhone);
 
-        if(env('APP_ENV') == 'local') {
-            $sellerPhone = "6596618339";
-        }
+        // if(env('APP_ENV') == 'local') {
+        //     $sellerPhone = "6596618339";
+        // }
 
-        $hasText = $request->input('hasText') ?? true;
+        $hasText = true;
+        if(!empty($request->input('hasText')) && strval($request->input('hasText')) == 'false') {
+            $hasText = false;
+        }
 
         if($hasText) {
             $message = $this->getDefaultText();
@@ -145,6 +148,15 @@ class MyzapController extends BaseController
             } else {
                 $message = env('APP_URL') . '/assets/img/billets/' . $sale->billet_file;
             }
+            
+            $this->sendText($request->user(), $session, $sellerPhone, $message, true);
+        } else {
+            if(env('APP_ENV') == 'local') {
+                $message = "http://itaimbemaquinas.com.br/wp-content/uploads/sites/79/2020/07/zap-vermelho.png"; // env('MYZAP_IMG_DIR') . $sale->billet_file;    
+            } else {
+                $message = env('APP_URL') . '/assets/img/billets/' . $sale->billet_file;
+            }
+            
             $this->sendText($request->user(), $session, $sellerPhone, $message, true);
         }
 
