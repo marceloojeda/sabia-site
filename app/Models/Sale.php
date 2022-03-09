@@ -229,7 +229,7 @@ EOF;
     {
         $numbers = DB::table('billets_control')
             ->where('available', true)
-            ->select('number')
+            ->select(['id', 'number'])
             ->get();
 
         return $numbers->toArray();

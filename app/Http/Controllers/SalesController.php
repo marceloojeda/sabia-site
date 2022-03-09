@@ -129,16 +129,18 @@ class SalesController extends BaseController
         }
 
         $bilhetes = $saleData['amount_paid'];
-        $ticket = $this->getTicketNumber($saleData);
         $sales = [];
         $arrSalesId = [];
         for ($i = 0; $i < $bilhetes; $i++) {
+            $ticket = $this->getTicketNumber($saleData);
+
             $saleData['amount_paid'] = 12;
             $saleData['ticket_number'] = $ticket;
 
             $obj = Sale::create($saleData);
             $obj->refresh();
-            $ticket++;
+            
+            $this->setSaleInNumberAvailable($obj->id, $ticket);
 
             $arrSale = $obj->toArray();
             $arrSale['ticket_number'] = str_pad(strval($obj->ticket_number), 4, '0', STR_PAD_LEFT);
@@ -176,10 +178,19 @@ class SalesController extends BaseController
 
         $index = array_rand($arrNumbers);
         $number = $arrNumbers[$index]->number;
+        $id = $arrNumbers[$index]->id;
 
-        DB::update('update billets_control set available = ? where number = ?', [false, $number]);
+        DB::update('update billets_control set available = ?, updated_at = ? where id = ? and number = ?', [false, date('Y-m-d H:i:s'), $id, $number ]);
 
         return $number;
+    }
+
+    private function setSaleInNumberAvailable($saleId, $number)
+    {
+        $numberAvailable = DB::table('billets_controls')->where('number', $number)->where('available', false);
+        if($numberAvailable) {
+            DB::update('update billets_control set sale_id = ? where number = ?', [$saleId, $number]);
+        }
     }
 
     /**
@@ -256,6 +267,7 @@ class SalesController extends BaseController
 
             $sale->update($saleData);
             // $ticket++;
+            $this->setSaleInNumberAvailable($sale->id, $ticket);
         }
 
         return redirect('/sales');
