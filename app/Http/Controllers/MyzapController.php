@@ -282,6 +282,8 @@ EOF;
             $txt = $request->json();
             fwrite($myfile, json_encode($txt, JSON_PRETTY_PRINT));
             fclose($myfile);
+
+            return respose('log registrado');
         } catch (\Throwable $th) {
             return response($th->getMessage(), 500);
         }
