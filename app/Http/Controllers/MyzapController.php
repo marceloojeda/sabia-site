@@ -256,6 +256,8 @@ EOF;
             $txt = $request->json();
             fwrite($myfile, json_encode($txt, JSON_PRETTY_PRINT));
             fclose($myfile);
+
+            return response('log registrado');
         } catch (\Throwable $th) {
             return response($th->getMessage(), 500);
         }
@@ -269,6 +271,8 @@ EOF;
             $txt = $request->json();
             fwrite($myfile, json_encode($txt, JSON_PRETTY_PRINT));
             fclose($myfile);
+
+            return response('log registrado');
         } catch (\Throwable $th) {
             return response($th->getMessage(), 500);
         }
@@ -283,7 +287,7 @@ EOF;
             fwrite($myfile, json_encode($txt, JSON_PRETTY_PRINT));
             fclose($myfile);
 
-            return respose('log registrado');
+            return response('log registrado');
         } catch (\Throwable $th) {
             return response($th->getMessage(), 500);
         }
