@@ -34,7 +34,7 @@ class MyzapController extends BaseController
             $user = $request->user();
             $session = $this->getUserPhone($user);
 
-            if(!empty($request->input('close')) && $request->input('close') == 'true') {
+            if (!empty($request->input('close')) && $request->input('close') == 'true') {
                 $this->closeSession($user, $session);
             }
 
@@ -53,7 +53,6 @@ class MyzapController extends BaseController
             $result = json_decode($jsonResp, true);
 
             return response()->json($result);
-
         } catch (\Exception $e) {
             return response($e->getMessage(), 500);
         }
@@ -87,7 +86,8 @@ class MyzapController extends BaseController
         return response()->noContent();
     }
 
-    private function closeSession($user, $session) {
+    private function closeSession($user, $session)
+    {
         $serverhost = env('MYZAP_URL') . '/close';
         $headers = [
             "sessionkey" => $this->getSessionKey($user),
@@ -96,7 +96,7 @@ class MyzapController extends BaseController
 
         $response = Http::withHeaders($headers)->post($serverhost, ['session' => $session]);
 
-        if($response->status() != 200) {
+        if ($response->status() != 200) {
             return $response->body();
         }
 
@@ -135,28 +135,28 @@ class MyzapController extends BaseController
         // }
 
         $hasText = true;
-        if(!empty($request->input('hasText')) && strval($request->input('hasText')) == 'false') {
+        if (!empty($request->input('hasText')) && strval($request->input('hasText')) == 'false') {
             $hasText = false;
         }
 
-        if($hasText) {
+        if ($hasText) {
             $message = $this->getDefaultText();
             $this->sendText($request->user(), $session, $sellerPhone, $message, false);
 
-            if(env('APP_ENV') == 'local') {
+            if (env('APP_ENV') == 'local') {
                 $message = "http://itaimbemaquinas.com.br/wp-content/uploads/sites/79/2020/07/zap-vermelho.png"; // env('MYZAP_IMG_DIR') . $sale->billet_file;    
             } else {
                 $message = env('APP_URL') . '/assets/img/billets/' . $sale->billet_file;
             }
-            
+
             $this->sendText($request->user(), $session, $sellerPhone, $message, true);
         } else {
-            if(env('APP_ENV') == 'local') {
+            if (env('APP_ENV') == 'local') {
                 $message = "http://itaimbemaquinas.com.br/wp-content/uploads/sites/79/2020/07/zap-vermelho.png"; // env('MYZAP_IMG_DIR') . $sale->billet_file;    
             } else {
                 $message = env('APP_URL') . '/assets/img/billets/' . $sale->billet_file;
             }
-            
+
             $this->sendText($request->user(), $session, $sellerPhone, $message, true);
         }
 
@@ -165,12 +165,12 @@ class MyzapController extends BaseController
 
     private function sendText($user, $session, $sellerPhone, $message, $isFile = false)
     {
-        if(empty($message)) {
+        if (empty($message)) {
             return true;
         }
-        
+
         $serverhost = env('MYZAP_URL');
-        if($isFile) {
+        if ($isFile) {
             $serverhost .= '/sendImage';
         } else {
             $serverhost .= '/sendText';
@@ -187,14 +187,14 @@ class MyzapController extends BaseController
             'text' => $message
         ];
 
-        if($isFile) {
+        if ($isFile) {
             unset($body['text']);
             $body['path'] = $message;
         }
 
         $jsonResp = Http::withHeaders($headers)->post($serverhost, $body);
 
-        if(env('APP_ENV') == 'local' && $jsonResp->status() != 200) {
+        if (env('APP_ENV') == 'local' && $jsonResp->status() != 200) {
             var_dump([
                 'host' => $serverhost,
                 'headers' => $headers,
@@ -235,10 +235,10 @@ EOF;
         $file = env('MYZAP_IMG_DIR') . $filename;
         $success = file_put_contents($file, $data);
 
-        if(!$success) {
+        if (!$success) {
             throw new Exception("Nao foi possivel gerar a imagem do bilhete.");
         }
-        
+
         $sale = Sale::where('id', $request->saleId)->firstOrFail();
         $sale->billet_file = $filename;
         $sale->update();
@@ -246,5 +246,44 @@ EOF;
         return response()->json([
             'file' => $file
         ]);
+    }
+
+    public function webhookStatus(Request $request)
+    {
+        $filename = '/var/www/html/sabia-site/storage/logs/myzapStatus.log';
+        try {
+            $myfile = fopen($filename, "a");
+            $txt = $request->json();
+            fwrite($myfile, json_encode($txt, JSON_PRETTY_PRINT));
+            fclose($myfile);
+        } catch (\Throwable $th) {
+            return response($th->getMessage(), 500);
+        }
+    }
+
+    public function webhookConnect(Request $request)
+    {
+        $filename = '/var/www/html/sabia-site/storage/logs/myzapConnect.log';
+        try {
+            $myfile = fopen($filename, "a");
+            $txt = $request->json();
+            fwrite($myfile, json_encode($txt, JSON_PRETTY_PRINT));
+            fclose($myfile);
+        } catch (\Throwable $th) {
+            return response($th->getMessage(), 500);
+        }
+    }
+
+    public function webhookQrcode(Request $request)
+    {
+        $filename = '/var/www/html/sabia-site/storage/logs/myzapQrcode.log';
+        try {
+            $myfile = fopen($filename, "a");
+            $txt = $request->json();
+            fwrite($myfile, json_encode($txt, JSON_PRETTY_PRINT));
+            fclose($myfile);
+        } catch (\Throwable $th) {
+            return response($th->getMessage(), 500);
+        }
     }
 }

@@ -25,6 +25,10 @@ Route::get('/myzap/qrcode/{session}', 'MyzapController@getQrCode');
 Route::get('/myzap/send-ticket/{sale}', 'MyzapController@sendTicket');
 Route::post('/myzap/store-billet', 'MyzapController@storeBillet');
 
+Route::get('/myzap/wh-status', 'MyzapController@webhookStatus');
+Route::get('/myzap/wh-connect', 'MyzapController@webhookConnect');
+Route::get('/myzap/wh-qrcode', 'MyzapController@webhookQrcode');
+
 Route::get('/adm/teams', 'TeamsController@indexToAdm');
 Route::post('/adm/buyers', 'TeamsController@buyerList')->name('adm.buyers');
 Route::get('/adm/teams/sales-seller/{user}', 'TeamsController@salesOfSeller');
