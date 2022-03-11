@@ -154,7 +154,7 @@ class TeamsController extends BaseController
             array_push($teams, $squad);
         }
 
-        return view('adm.teams.index', compact('teams', $sellersRanking));
+        return view('adm.teams.index', compact('teams'));
     }
 
     private function getTeamFromHead($headId, &$teams)
