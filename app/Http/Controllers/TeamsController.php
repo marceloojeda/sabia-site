@@ -154,7 +154,7 @@ class TeamsController extends BaseController
             array_push($teams, $squad);
         }
 
-        return view('adm.teams.index', compact('teams'));
+        return view('adm.teams.index', compact('teams', $sellersRanking));
     }
 
     private function getTeamFromHead($headId, &$teams)
@@ -267,9 +267,10 @@ class TeamsController extends BaseController
                 continue;
             }
 
+            $totalVendas = $this->getSalesTeam($head['id']);
             $retorno[] = [
-                'head' => $headName,
-                'vendas' => $this->getSalesTeam($head['id']),
+                'head' => $headName . '(' . strval($totalVendas) . ')',
+                'vendas' => $totalVendas,
                 'meta' => 88
             ];
         }

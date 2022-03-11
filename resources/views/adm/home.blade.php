@@ -59,11 +59,34 @@
     </div>
 </div>
 
-<div class="row mt-4" id="rankingBox">
-    
+<div class="row mt-4" id="rankingBox"></div>
+
+<div class="row mt-4">
+    <div class="col-6">
+        <div class="card">
+            <div class="card-header bg-warning">
+                <h4 class="card-title">Melhores vendedores da semana</h4>
+            </div>
+            <div class="card-body">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Vendedor</th>
+                            <th>Vendas</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($dashData['rankingSellersWeek'] as $result)
+                        <tr>
+                            <td>{{ $result->seller }}</td>
+                            <td>{{ $result->vendas }}</td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 </div>
-
-
-
 
 @endsection
