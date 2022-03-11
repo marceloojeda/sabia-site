@@ -7,7 +7,7 @@ window.initMyzap = function () {
 }
 
 window.startMyzap = function () {
-    let close = true;
+    let close = false;
     let isConnecting = false;
 
     let startMyzapTimer = setInterval(() => {
@@ -32,8 +32,7 @@ window.startMyzap = function () {
                 }
     
                 close = false;
-            })
-            .fail((error) => {
+            }).catch((error) => {
                 isConnecting = false;
                 console.log(error.message);
                 alert(error.message);
@@ -57,51 +56,34 @@ window.startMyzapAsync = async function (close) {
 
 window.sendBillets = function () {
     let hasDefaultText = true;
+    setMyzapAlert('Enviando Bilhetes...');
+
     const billets = [...document.querySelectorAll('.check-myzap:checked')].map((e, i, rows) => {
         document.getElementById('btnSendTicket').setAttribute('disabled', true);
         const ticket = document.getElementById('ticket-' + e.value);
         if (ticket.getAttribute('data-hasfile') == 'false') {
-            exportBillet(e.value, hasDefaultText, i + 1 === rows.length);
-            hasDefaultText = false;
+            
+            const ticketDiv = document.getElementById('ticket-' + e.value);
+            htmlToImage.toPng(ticketDiv)
+            .then(function (imgBase64) {
+                const sendData = { img: imgBase64, saleId: e.value }
+                storeBillet(sendData);
+                sendText(e.value, myzapSession, hasDefaultText);
+            });
         } else {
-            $.get(apiUrl + "/myzap/send-ticket/" + e.value + '?session=' + myzapSession + '&hasText=' + hasDefaultText)
-                .fail((jqXHR, textStatus, errorThrown) => {
-                    setMyzapAlert(jqXHR.responseText);
-                    return;
-                }).done((data) => {
-                    if (i + 1 === rows.length) {
-                        setMyzapAlert('');
-                        alert('Bilhetes enviados!');
-                        $('#myzapModal').modal('hide');
-                        $.get(apiUrl + '/myzap/close');
-                    }
-                });
+            sendText(e.value, myzapSession, hasDefaultText);
         }
+        
         hasDefaultText = false;
+        if (i + 1 === rows.length) {
+            // setMyzapAlert('Enviando Bilhetes...');
+            alert('Bilhetes sendo enviados!');
+            $('#myzapModal').modal('hide');
+            // $.get(apiUrl + '/myzap/close');
+        }
     });
 }
 
-window.exportBillet = function (saleId, hasDefaultText, lastItem) {
-    htmlToImage.toPng(document.getElementById('ticket-' + saleId))
-        .then(function (dataUrl) {
-            $.post(apiUrl + '/myzap/store-billet', { img: dataUrl, saleId: saleId }).done((result) => {
-                $.get(apiUrl + "/myzap/send-ticket/" + saleId + '?session=' + myzapSession + '&hasText=' + hasDefaultText)
-                    .fail((jqXHR, textStatus, errorThrown) => {
-                        setMyzapAlert(jqXHR.responseText);
-                        return;
-                    }).done((data) => {
-                        if (lastItem) {
-                            setMyzapAlert('');
-                            alert('Bilhetes enviados!');
-                            $('#myzapModal').modal('hide');
-                            $.get(apiUrl + '/myzap/close');
-                        }
-                    });
-            }).fail((err) => {
-                // console.log(err)
-            })
-        });
-}
 
 window.setMyzapAlert = function (message) {
     const label = document.getElementById('lblMyzapAlert');
@@ -129,4 +111,33 @@ window.sendTicketsBatch = function () {
     } else {
         window.location.href = urlApp + '?sales=' + sales.join('|');
     }
+}
+
+window.sendText = async function(saleId, session, hasText) {
+    const serviceUrl = apiUrl + "/myzap/send-ticket/" + saleId + '?session=' + session + '&hasText=' + hasText;
+
+    $.ajax({
+        url: serviceUrl,
+        method: 'get'
+    }).done(function (data) {
+        setMyzapAlert('') ;
+    }).fail(function (err) {
+        const errJson = err.responseJSON;
+        setMyzapAlert(errJson.msg);
+    })
+}
+
+window.storeBillet = function(sendData) {
+    const serviceUrl = apiUrl + '/myzap/store-billet';
+
+    $.ajax({
+        url: serviceUrl,
+        method: 'post',
+        data: sendData
+    }).done(function (data) {
+        // sendText(saleId, myzapSession, hasDefaultText);
+    }).fail(function (err) {
+        const errJson = err.responseJSON;
+        setMyzapAlert(errJson.msg);
+    })
 }
