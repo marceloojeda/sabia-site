@@ -74,6 +74,7 @@ class HomeController extends BaseController
         $dashData['metas']['accumulated'] = $acumulado;
 
         $dashData['rankingSellersWeek'] = $this->getSellersRankingWeek();
+        $dashData['rankingSellersGeneral'] = $this->getSellersRankingWeek(false);
 
         return $dashData;
     }
@@ -254,15 +255,20 @@ class HomeController extends BaseController
         return $total;
     }
 
-    private function getSellersRankingWeek()
+    private function getSellersRankingWeek($isWeek = true)
     {
-        $semanaId = env('SEMANA_ATUAL_SELLER');
-        $calendarTeam = Calendar::where('is_active', true)
-            ->where('id', $semanaId)
-            ->first();
+        $dtInicial = '2022-02-10 00:0:00';
+        $dtFim = date('Y-m-d 23:59:59');
+        if($isWeek) {
+            $semanaId = env('SEMANA_ATUAL_SELLER');
+            $calendarTeam = Calendar::where('is_active', true)
+                ->where('id', $semanaId)
+                ->first();
 
-        $arrDtFim = explode(' ', $calendarTeam->finish_at);
-        $dtFim = $arrDtFim[0] . ' 23:59:59';
+            $dtInicial = $calendarTeam->begin_at;
+            $arrDtFim = explode(' ', $calendarTeam->finish_at);
+            $dtFim = $arrDtFim[0] . ' 23:59:59';
+        }
 
         $sql = <<<EOF
         select count(s.id) as vendas, s.seller 
@@ -270,7 +276,7 @@ class HomeController extends BaseController
         where s.payment_status = 'Pago'
         and s.amount_paid is not null
         and s.user_id is not null
-        and s.created_at BETWEEN '$calendarTeam->begin_at' and '$dtFim'
+        and s.created_at BETWEEN '$dtInicial' and '$dtFim'
         group by s.seller
         order by count(s.id) desc
         limit 11;
