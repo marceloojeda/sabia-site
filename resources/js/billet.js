@@ -38,7 +38,7 @@ window.startMyzap = function () {
                 alert(error.message);
             });
         }
-    }, 2000);
+    }, 5000);
 
     setTimeout(() => {
         clearInterval(startMyzapTimer);
