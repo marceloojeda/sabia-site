@@ -22,7 +22,6 @@ window.startMyzap = function () {
                 isConnected = checkMyzapSession();
                 setTimeout(() => {
                     if (isConnected) {
-
                         clearInterval(checkMyzapTimer);
                     }
                 }, 2000)
@@ -36,18 +35,15 @@ window.startMyzap = function () {
     }).catch(function(err) {
         setMyzapAlert(err.responseText);
     });
-    
-
-    setTimeout(() => {
-        clearInterval(startMyzapTimer);
-    }, 1000 * 120)
 }
 
 window.checkMyzapSession = function() {
     $.get(apiUrl + "/myzap/check-state/" + myzapSession, function(data) {
-        if (data.state == 'QRCODE' || (data.state != 'CONNECTED' && data.qrcode && data.qrcode != '' && data.qrcode != undefined)) {
+        if(data.qrcode && data.qrcode != '' && data.qrcode != undefined) {
             document.getElementById('myzap-qrcode').setAttribute('src', data.qrcode);
-        } else if (data.state == 'CONNECTED' && data.status == 'inChat') {
+        }
+        
+        if (data.state == 'CONNECTED' && data.status == 'inChat') {
             document.getElementById('myzap-box').classList.remove('d-flex');
             document.getElementById('myzap-box').classList.add('d-none');
             document.getElementById('tickets-box').classList.remove('d-none');
