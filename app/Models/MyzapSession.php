@@ -13,7 +13,8 @@ class MyzapSession extends Model
         'session_key',
         'state',
         'status',
-        'number'
+        'number',
+        'qrcode'
     ];
 
     public function updateSession(array $wookData, $userId)
@@ -25,9 +26,12 @@ class MyzapSession extends Model
         }
         
         $arrUpdate = [];
-        $arrUpdate['state'] = $wookData['state'];
-        $arrUpdate['status'] = $wookData['status'];
-
+        if (!empty($wookData['state'])) {
+            $arrUpdate['state'] = $wookData['state'];
+        }
+        if (!empty($wookData['status'])) {
+            $arrUpdate['status'] = $wookData['status'];
+        }
         if (!empty($wookData['number'])) {
             $arrUpdate['number'] = $wookData['number'];
         }
