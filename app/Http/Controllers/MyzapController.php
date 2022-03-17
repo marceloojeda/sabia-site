@@ -265,8 +265,10 @@ EOF;
         try {
             $wookData = $request->all();
 
-            Storage::append('logs/myzap.log', json_encode($wookData, JSON_PRETTY_PRINT));
-            
+            $file = fopen('/var/www/html/sabia-site/storage/logs/myzap.log', 'a+');
+            fwrite($file, json_encode($wookData, JSON_PRETTY_PRINT));
+            fclose($file);
+
             if(empty($wookData['wook'])) {
                 return response()->noContent();
             }
