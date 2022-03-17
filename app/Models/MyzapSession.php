@@ -39,6 +39,12 @@ class MyzapSession extends Model
             $arrUpdate['qrcode'] = $wookData['qrcode'];
         }
 
+        // Em caso de fechamento da sessão
+        if(!empty($wookData['state']) && $wookData['state'] == 'browserClose') {
+            $arrUpdate['qrcode'] = null;
+            $arrUpdate['number'] = $wookData['number'];
+        }
+
         $session->update($arrUpdate);
     }
 }
