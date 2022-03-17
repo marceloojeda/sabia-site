@@ -74,7 +74,7 @@ class MyzapController extends BaseController
             return $myzapSession;
         }
 
-        $sessionKey = $this->stringRandom();
+        $sessionKey = $this->stringRandom(8);
         $arrSession = [
             'user_id' => $user->id,
             'session' => $session,
