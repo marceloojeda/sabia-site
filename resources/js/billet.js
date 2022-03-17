@@ -17,10 +17,15 @@ window.startMyzap = function () {
 
             setMyzapAlert('');
         } else {
+            let isConnected = false;
             let checkMyzapTimer = setInterval(() => {
-                if (checkMyzapSession()) {
-                    clearInterval(checkMyzapTimer);
-                }
+                isConnected = checkMyzapSession();
+                setTimeout(() => {
+                    if (isConnected) {
+
+                        clearInterval(checkMyzapTimer);
+                    }
+                }, 2000)
             }, 5000);
 
             // Encerra tentativas após 1 min
