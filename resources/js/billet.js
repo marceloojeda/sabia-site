@@ -1,5 +1,8 @@
 window.initMyzap = function () {
     document.getElementById('btnSendTicket').setAttribute('disabled', true);
+    document.getElementById('myzap-box').classList.add('d-flex');
+    document.getElementById('myzap-box').classList.remove('d-none');
+    document.getElementById('tickets-box').classList.add('d-none');
 
     $('#myzapModal').modal('show');
 
