@@ -278,13 +278,16 @@ EOF;
         }
     }
 
-    public function webhookQrcode(Request $request)
+    public function webhook(Request $request)
     {
         $filename = '/var/www/html/sabia-site/storage/logs/myzapQrcode.log';
         try {
+            $inputJSON = file_get_contents('php://input');
+            $input = json_decode($inputJSON, TRUE); //convert JSON into array
+
             $myfile = fopen($filename, "a");
-            $txt = $request->json();
-            fwrite($myfile, json_encode($txt, JSON_PRETTY_PRINT));
+            // $txt = $request->json();
+            fwrite($myfile, $input); //json_encode($input, JSON_PRETTY_PRINT));
             fclose($myfile);
 
             return response('log registrado');
