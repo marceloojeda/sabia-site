@@ -186,8 +186,9 @@ class MyzapController extends BaseController
             $serverhost .= '/sendText';
         }
 
+        $myzapSession = $this->getMyzapSession($user, $session);
         $headers = [
-            "sessionkey" => $this->getSessionKey($user),
+            "sessionkey" => $myzapSession->session_key,
             'Content-Type' => 'application/json'
         ];
 
@@ -264,10 +265,6 @@ EOF;
         
         try {
             $wookData = $request->all();
-
-            $file = fopen('/var/www/html/sabia-site/storage/logs/myzap.log', 'a+');
-            fwrite($file, json_encode($wookData, JSON_PRETTY_PRINT));
-            fclose($file);
 
             if(empty($wookData['wook'])) {
                 return response()->noContent();
