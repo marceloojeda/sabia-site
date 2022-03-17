@@ -7,52 +7,56 @@ window.initMyzap = function () {
 }
 
 window.startMyzap = function () {
-    let close = true;
-    let isConnecting = false;
+    $.get(apiUrl + "/myzap/start", function(data) {
+        if (data.state == 'QRCODE') {
+            document.getElementById('myzap-qrcode').setAttribute('src', data.qrcode);
+        } else if (data.state == 'CONNECTED' && data.status == 'inChat') {
+            document.getElementById('myzap-box').classList.remove('d-flex');
+            document.getElementById('myzap-box').classList.add('d-none');
+            document.getElementById('tickets-box').classList.remove('d-none');
 
-    let startMyzapTimer = setInterval(() => {
-        if(!isConnecting) {
-            isConnecting = true;
+            setMyzapAlert('');
+        } else {
+            let checkMyzapTimer = setInterval(() => {
+                if (checkMyzapSession()) {
+                    clearInterval(checkMyzapTimer);
+                }
+            }, 5000);
 
-            startMyzapAsync(close).then((data) => {
-                isConnecting = false;
-                
-                if (data.state == 'QRCODE' && data.status == 'notLogged') {
-                    document.getElementById('myzap-qrcode').setAttribute('src', data.qrcode);
-                }
-    
-                if (data.state == 'CONNECTED' && data.status == 'inChat') {
-                    clearInterval(startMyzapTimer);
-                    document.getElementById('myzap-box').classList.remove('d-flex');
-                    document.getElementById('myzap-box').classList.add('d-none');
-    
-                    document.getElementById('tickets-box').classList.remove('d-none');
-    
-                    setMyzapAlert('');
-                }
-    
-                close = false;
-            })
-            .fail((error) => {
-                isConnecting = false;
-                console.log(error.message);
-                alert(error.message);
-            });
+            // Encerra tentativas após 1 min
+            setTimeout(() => {
+                clearInterval(checkMyzapTimer);
+            }, 1000 * 60)
         }
-    }, 2000);
+    }).catch(function(err) {
+        setMyzapAlert(err.responseText);
+    });
+    
 
     setTimeout(() => {
         clearInterval(startMyzapTimer);
     }, 1000 * 120)
 }
 
-window.startMyzapAsync = async function (close) {
-    let startResult = null;
-    await $.get(apiUrl + "/myzap/start?close=" + close, function (data, status) {
-        startResult = data;
-    });
+window.checkMyzapSession = function() {
+    $.get(apiUrl + "/myzap/check-state/" + myzapSession, function(data) {
+        if (data.state == 'QRCODE') {
+            document.getElementById('myzap-qrcode').setAttribute('src', data.qrcode);
+        } else if (data.state == 'CONNECTED' && data.status == 'inChat') {
+            document.getElementById('myzap-box').classList.remove('d-flex');
+            document.getElementById('myzap-box').classList.add('d-none');
+            document.getElementById('tickets-box').classList.remove('d-none');
 
-    return startResult;
+            setMyzapAlert('');
+
+            return true;
+        }
+
+        return false;
+    }).catch(function(err) {
+        setMyzapAlert(err.responseText);
+        return true;
+    });
 }
 
 window.sendBillets = function () {

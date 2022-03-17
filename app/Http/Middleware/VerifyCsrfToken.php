@@ -13,7 +13,7 @@ class VerifyCsrfToken extends Middleware
      */
     protected $except = [
         'myzap/start',
-        'myzap/qrcode/*',
+        'myzap/check-state/*',
         'myzap/send-ticket/*',
         'myzap/store-billet',
         'myzap/webhook',

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use ApiGratis\ApiBrasil;
+use App\Models\MyzapSession;
 use App\Models\Sale;
 use Exception;
 use Illuminate\Http\Client\ConnectionException;
@@ -33,20 +34,20 @@ class MyzapController extends BaseController
 
             $user = $request->user();
             $session = $this->getUserPhone($user);
-
-            if (!empty($request->input('close')) && $request->input('close') == 'true') {
-                $this->closeSession($user, $session);
-            }
+            $myzapSession = $this->getMyzapSession($user, $session);
 
             $serverhost = env('MYZAP_URL') . '/start';
             $token = env('MYZAP_TOKEN');
             $headers = [
                 'Content-Type' => 'application/json',
                 'apitoken' => $token,
-                "sessionkey" => $this->getSessionKey($user)
+                "sessionkey" => $myzapSession->session_key
             ];
             $body = [
                 "session" => $session,
+                "wh_status" => env('APP_URL') . '/myzap/webhook?user=' . $user->id,
+                "wh_connect" => env('APP_URL') . '/myzap/webhook?user=' . $user->id,
+                "wh_qrcode" => env('APP_URL') . '/myzap/webhook?user=' . $user->id
             ];
             $jsonResp = Http::withHeaders($headers)->post($serverhost, $body);
 
@@ -64,22 +65,32 @@ class MyzapController extends BaseController
         return strval($phone);
     }
 
-    private function getSessionKey($user)
+    private function getMyzapSession($user, $session)
     {
-        // $phone = preg_replace("/[^0-9]/", "", $user->phone);
-        // $arrName = explode(" ", $user->name);
+        $myzapSession = MyzapSession::where('user_id', $user->id)->first();
+        if(!empty($myzapSession->session_key)) {
+            return $myzapSession;
+        }
 
-        // return strval(strtolower($arrName[0] . '_sabia'));
+        $sessionKey = $this->stringRandom();
+        $arrSession = [
+            'user_id' => $user->id,
+            'session' => $session,
+            'session_key' => $sessionKey,
+        ];
 
-        return env('MYZAP_SESSION_KEY');
+        $myzapSession = MyzapSession::create($arrSession);
+        $myzapSession->refresh();
+        
+        return $myzapSession;
     }
 
-    public function close(Request $request)
+    public function close(Request $request, $session)
     {
         $this->checkPerfilUsuario($request);
 
         $user = $request->user();
-        $session = $this->getUserPhone($user);
+        // $session = $this->getUserPhone($user);
 
         $this->closeSession($user, $session);
 
@@ -89,8 +100,9 @@ class MyzapController extends BaseController
     private function closeSession($user, $session)
     {
         $serverhost = env('MYZAP_URL') . '/close';
+        $myzapSession = $this->getMyzapSession($user, $session);
         $headers = [
-            "sessionkey" => $this->getSessionKey($user),
+            "sessionkey" => $myzapSession->session_key,
             'Content-Type' => 'application/json'
         ];
 
@@ -101,22 +113,18 @@ class MyzapController extends BaseController
         }
 
         $serverhost = env('MYZAP_URL') . '/logout';
-        $headers = [
-            "sessionkey" => $this->getSessionKey($user),
-            'Content-Type' => 'application/json'
-        ];
-
         $response = Http::withHeaders($headers)->post($serverhost, ['session' => $session]);
 
         return $response->body();
     }
 
-    public function getQrCode($user, $session)
+    public function checkState(Request $request, $session)
     {
-        $sessionKey = $this->getSessionKey($user);
-        $url = sprintf("%s/getqrcode?session=%s&sessionkey=%s", env('MYZAP_URL'), $session, $sessionKey);
-
-        return response($url);
+        $this->checkPerfilUsuario($request);
+        $user = $request->user();
+        
+        $myzapSession = $this->getMyzapSession($user, $session);
+        return response()->json($myzapSession);
     }
 
     public function sendTicket(Request $request, Sale $sale)
@@ -250,18 +258,19 @@ EOF;
 
     public function webhook(Request $request)
     {
-        $filename = '/var/www/html/sabia-site/storage/logs/myzap.log';
+        $model = new MyzapSession();
+        
         try {
-            // $input = file_get_contents('php://input');
-            // $input = json_decode($inputJSON, TRUE); //convert JSON into array
+            $wookData = $request->all();
+            if(empty($wookData['wook'])) {
+                return response()->noContent();
+            }
 
+            $userId = $request->input('user') ?? null;
+            $model->updateSession($wookData, $userId);
 
-            $myfile = fopen($filename, "a");
-            $txt = $request->json();
-            fwrite($myfile, json_encode($txt, JSON_PRETTY_PRINT));
-            fclose($myfile);
+            return response('Myzap Session atualizado com sucesso!');
 
-            return response('log registrado');
         } catch (\Throwable $th) {
             return response($th->getMessage(), 500);
         }

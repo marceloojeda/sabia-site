@@ -20,8 +20,8 @@ Route::get('/', function() {
 Route::get('/home', 'HomeController@index')->name('home');
 
 Route::get('/myzap/start', 'MyzapController@start');
-Route::get('/myzap/close', 'MyzapController@close');
-Route::get('/myzap/qrcode/{session}', 'MyzapController@getQrCode');
+Route::get('/myzap/close/{session}', 'MyzapController@close');
+Route::get('/myzap/check-state/{session}', 'MyzapController@checkState');
 Route::get('/myzap/send-ticket/{sale}', 'MyzapController@sendTicket');
 Route::post('/myzap/store-billet', 'MyzapController@storeBillet');
 
