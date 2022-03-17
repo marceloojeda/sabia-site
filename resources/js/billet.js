@@ -40,7 +40,7 @@ window.startMyzap = function () {
 
 window.checkMyzapSession = function() {
     $.get(apiUrl + "/myzap/check-state/" + myzapSession, function(data) {
-        if (data.state == 'QRCODE') {
+        if (data.state == 'QRCODE' || (data.qrcode && data.qrcode != '' && data.qrcode != undefined)) {
             document.getElementById('myzap-qrcode').setAttribute('src', data.qrcode);
         } else if (data.state == 'CONNECTED' && data.status == 'inChat') {
             document.getElementById('myzap-box').classList.remove('d-flex');
