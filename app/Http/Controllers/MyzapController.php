@@ -282,12 +282,13 @@ EOF;
     {
         $filename = '/var/www/html/sabia-site/storage/logs/myzapQrcode.log';
         try {
-            $inputJSON = file_get_contents('php://input');
-            $input = json_decode($inputJSON, TRUE); //convert JSON into array
+            $input = file_get_contents('php://input');
+            // $input = json_decode($inputJSON, TRUE); //convert JSON into array
+
 
             $myfile = fopen($filename, "a");
             // $txt = $request->json();
-            fwrite($myfile, $input); //json_encode($input, JSON_PRETTY_PRINT));
+            fwrite($myfile, json_encode($input, JSON_PRETTY_PRINT));
             fclose($myfile);
 
             return response('log registrado');
