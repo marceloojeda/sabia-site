@@ -69,21 +69,29 @@ window.sendBillets = function () {
         document.getElementById('btnSendTicket').setAttribute('disabled', true);
         const ticket = document.getElementById('ticket-' + e.value);
         if (ticket.getAttribute('data-hasfile') == 'false') {
-            exportBillet(e.value, hasDefaultText, i + 1 === rows.length);
-            hasDefaultText = false;
+
+            // intervalo entre as requisições
+            setTimeout(() => {
+                exportBillet(e.value, hasDefaultText, i + 1 === rows.length);
+                hasDefaultText = false;
+            }, 2000);
+
         } else {
 
-            $.get(apiUrl + "/myzap/send-ticket/" + e.value + '?session=' + myzapSession + '&hasText=' + hasDefaultText, function(data) {
-                if (i + 1 === rows.length) {
-                    setMyzapAlert('');
-                    alert('Bilhetes enviados!');
-                    $('#myzapModal').modal('hide');
-                    $.get(apiUrl + '/myzap/close/' + myzapSession);
-                }
-            }).catch(function(err) {
-                setMyzapAlert(err.responseText);
-                return;
-            });
+            // intervalo entre as requisições
+            setTimeout(() => {
+                $.get(apiUrl + "/myzap/send-ticket/" + e.value + '?session=' + myzapSession + '&hasText=' + hasDefaultText, function(data) {
+                    if (i + 1 === rows.length) {
+                        setMyzapAlert('');
+                        alert('Bilhetes enviados!');
+                        $('#myzapModal').modal('hide');
+                        $.get(apiUrl + '/myzap/close/' + myzapSession);
+                    }
+                }).catch(function(err) {
+                    setMyzapAlert(err.responseText);
+                    return;
+                });
+            }, 2000);
 
         }
         hasDefaultText = false;
