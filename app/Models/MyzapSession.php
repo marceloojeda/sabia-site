@@ -32,7 +32,7 @@ class MyzapSession extends Model
             $arrUpdate['number'] = $wookData['number'];
         }
         if (!empty($wookData['qrcode'])) {
-            $arrUpdate['qrcode'] = $wookData['qrcode'];
+            $arrUpdate['qrcode'] = str_replace('data:image/png;base64,', '', $wookData['qrcode']);
         }
 
         $session->update($arrUpdate);
