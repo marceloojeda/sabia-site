@@ -248,47 +248,17 @@ EOF;
         ]);
     }
 
-    public function webhookStatus(Request $request)
-    {
-        $filename = '/var/www/html/sabia-site/storage/logs/myzapStatus.log';
-        try {
-            $myfile = fopen($filename, "a");
-            $txt = $request->json();
-            fwrite($myfile, json_encode($txt, JSON_PRETTY_PRINT));
-            fclose($myfile);
-
-            return response('log registrado');
-        } catch (\Throwable $th) {
-            return response($th->getMessage(), 500);
-        }
-    }
-
-    public function webhookConnect(Request $request)
-    {
-        $filename = '/var/www/html/sabia-site/storage/logs/myzapConnect.log';
-        try {
-            $myfile = fopen($filename, "a");
-            $txt = $request->json();
-            fwrite($myfile, json_encode($txt, JSON_PRETTY_PRINT));
-            fclose($myfile);
-
-            return response('log registrado');
-        } catch (\Throwable $th) {
-            return response($th->getMessage(), 500);
-        }
-    }
-
     public function webhook(Request $request)
     {
-        $filename = '/var/www/html/sabia-site/storage/logs/myzapQrcode.log';
+        $filename = '/var/www/html/sabia-site/storage/logs/myzap.log';
         try {
-            $input = file_get_contents('php://input');
+            // $input = file_get_contents('php://input');
             // $input = json_decode($inputJSON, TRUE); //convert JSON into array
 
 
             $myfile = fopen($filename, "a");
-            // $txt = $request->json();
-            fwrite($myfile, json_encode($input, JSON_PRETTY_PRINT));
+            $txt = $request->json();
+            fwrite($myfile, json_encode($txt, JSON_PRETTY_PRINT));
             fclose($myfile);
 
             return response('log registrado');
