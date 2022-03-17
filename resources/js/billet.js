@@ -68,18 +68,19 @@ window.sendBillets = function () {
             exportBillet(e.value, hasDefaultText, i + 1 === rows.length);
             hasDefaultText = false;
         } else {
-            $.get(apiUrl + "/myzap/send-ticket/" + e.value + '?session=' + myzapSession + '&hasText=' + hasDefaultText)
-                .fail((jqXHR, textStatus, errorThrown) => {
-                    setMyzapAlert(jqXHR.responseText);
-                    return;
-                }).done((data) => {
-                    if (i + 1 === rows.length) {
-                        setMyzapAlert('');
-                        alert('Bilhetes enviados!');
-                        $('#myzapModal').modal('hide');
-                        $.get(apiUrl + '/myzap/close');
-                    }
-                });
+
+            $.get(apiUrl + "/myzap/send-ticket/" + e.value + '?session=' + myzapSession + '&hasText=' + hasDefaultText, function(data) {
+                if (i + 1 === rows.length) {
+                    setMyzapAlert('');
+                    alert('Bilhetes enviados!');
+                    $('#myzapModal').modal('hide');
+                    $.get(apiUrl + '/myzap/close/' + myzapSession);
+                }
+            }).catch(function(err) {
+                setMyzapAlert(err.responseText);
+                return;
+            });
+
         }
         hasDefaultText = false;
     });
@@ -89,18 +90,17 @@ window.exportBillet = function (saleId, hasDefaultText, lastItem) {
     htmlToImage.toPng(document.getElementById('ticket-' + saleId))
         .then(function (dataUrl) {
             $.post(apiUrl + '/myzap/store-billet', { img: dataUrl, saleId: saleId }).done((result) => {
-                $.get(apiUrl + "/myzap/send-ticket/" + saleId + '?session=' + myzapSession + '&hasText=' + hasDefaultText)
-                    .fail((jqXHR, textStatus, errorThrown) => {
-                        setMyzapAlert(jqXHR.responseText);
-                        return;
-                    }).done((data) => {
-                        if (lastItem) {
-                            setMyzapAlert('');
-                            alert('Bilhetes enviados!');
-                            $('#myzapModal').modal('hide');
-                            $.get(apiUrl + '/myzap/close');
-                        }
-                    });
+                $.get(apiUrl + "/myzap/send-ticket/" + saleId + '?session=' + myzapSession + '&hasText=' + hasDefaultText, function(data) {
+                    if (lastItem) {
+                        setMyzapAlert('');
+                        alert('Bilhetes enviados!');
+                        $('#myzapModal').modal('hide');
+                        $.get(apiUrl + '/myzap/close/' + myzapSession);
+                    }
+                }).catch(function(err) {
+                    setMyzapAlert(jqXHR.responseText);
+                    return;
+                });
             }).fail((err) => {
                 // console.log(err)
             })
