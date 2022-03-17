@@ -9,6 +9,7 @@ use App\Models\Sale;
 use Exception;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Storage;
 
 class MyzapController extends BaseController
 {
@@ -263,6 +264,9 @@ EOF;
         
         try {
             $wookData = $request->all();
+
+            Storage::append('logs/myzap.log', json_encode($wookData, JSON_PRETTY_PRINT));
+            
             if(empty($wookData['wook'])) {
                 return response()->noContent();
             }
