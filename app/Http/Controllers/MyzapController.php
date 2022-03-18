@@ -7,9 +7,8 @@ use ApiGratis\ApiBrasil;
 use App\Models\MyzapSession;
 use App\Models\Sale;
 use Exception;
-use Illuminate\Http\Client\ConnectionException;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Storage;
 
 class MyzapController extends BaseController
 {
@@ -131,46 +130,52 @@ class MyzapController extends BaseController
 
     public function sendTicket(Request $request, Sale $sale)
     {
-        if (empty($request->input('session'))) {
-            return response('Parametro session nao informado', 401);
-        }
-
-        $session = $request->input('session');
-        $seller = $sale->vendedor;
-        $sellerPhone = $seller->phone;
-        $sellerPhone = preg_replace("/[^0-9]/", "", $sellerPhone);
-
-        // if(env('APP_ENV') == 'local') {
-        //     $sellerPhone = "6596618339";
-        // }
-
-        $hasText = true;
-        if (!empty($request->input('hasText')) && strval($request->input('hasText')) == 'false') {
-            $hasText = false;
-        }
-
-        if ($hasText) {
-            $message = $this->getDefaultText();
-            $this->sendText($request->user(), $session, $sellerPhone, $message, false);
-
-            if (env('APP_ENV') == 'local') {
-                $message = "http://itaimbemaquinas.com.br/wp-content/uploads/sites/79/2020/07/zap-vermelho.png"; // env('MYZAP_IMG_DIR') . $sale->billet_file;    
-            } else {
-                $message = env('APP_URL') . '/assets/img/billets/' . $sale->billet_file;
+        try {
+            
+            if (empty($request->input('session'))) {
+                return response('Parametro session nao informado', 401);
             }
-
-            $this->sendText($request->user(), $session, $sellerPhone, $message, true);
-        } else {
-            if (env('APP_ENV') == 'local') {
-                $message = "http://itaimbemaquinas.com.br/wp-content/uploads/sites/79/2020/07/zap-vermelho.png"; // env('MYZAP_IMG_DIR') . $sale->billet_file;    
-            } else {
-                $message = env('APP_URL') . '/assets/img/billets/' . $sale->billet_file;
+    
+            $session = $request->input('session');
+            $seller = $sale->vendedor;
+            $sellerPhone = $seller->phone;
+            $sellerPhone = preg_replace("/[^0-9]/", "", $sellerPhone);
+    
+            $hasText = true;
+            if(!empty($request->input('hasText')) && strval($request->input('hasText')) == 'false') {
+                $hasText = false;
             }
-
-            $this->sendText($request->user(), $session, $sellerPhone, $message, true);
+    
+            if($hasText) {
+                $message = $this->getDefaultText();
+                $this->sendText($request->user(), $session, $sellerPhone, $message, false);
+    
+                if(env('APP_ENV') == 'local') {
+                    $message = "http://itaimbemaquinas.com.br/wp-content/uploads/sites/79/2020/07/zap-vermelho.png"; // env('MYZAP_IMG_DIR') . $sale->billet_file;    
+                } else {
+                    $message = env('APP_URL') . '/assets/img/billets/' . $sale->billet_file;
+                }
+                
+                $this->sendText($request->user(), $session, $sellerPhone, $message, true);
+            } else {
+                if(env('APP_ENV') == 'local') {
+                    $message = "http://itaimbemaquinas.com.br/wp-content/uploads/sites/79/2020/07/zap-vermelho.png"; // env('MYZAP_IMG_DIR') . $sale->billet_file;    
+                } else {
+                    $message = env('APP_URL') . '/assets/img/billets/' . $sale->billet_file;
+                }
+                
+                $this->sendText($request->user(), $session, $sellerPhone, $message, true);
+            }
+    
+            return response("Mensagem enviada com sucesso");
+        } catch(\Exception $e) {
+            $response = [
+                'error' => true,
+                'msg' => $e->getMessage()
+            ];
+            
+            return response()->json($response, $e->getCode());
         }
-
-        return response("Mensagem enviada com sucesso");
     }
 
     private function sendText($user, $session, $sellerPhone, $message, $isFile = false)
