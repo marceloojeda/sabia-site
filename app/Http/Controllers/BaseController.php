@@ -24,7 +24,7 @@ abstract class BaseController extends Controller
     {
         $perfil = $user->type;
 
-        if($isAdmin) {
+        if ($isAdmin) {
             return $perfil == 'Administrador';
         }
 
@@ -37,16 +37,16 @@ abstract class BaseController extends Controller
             ->where('is_active', true)
             ->where('type', 'Vendedor');
 
-        if($headId) {
+        if ($headId) {
             $query->where('head_id', $headId);
         }
-        
+
         $vendedores = $query
             ->orderBy('name')
             ->get(['id', 'name', 'email']);
 
         $arrSellers = $vendedores->toArray();
-        if(!empty($headId) && !empty($headName)) {
+        if (!empty($headId) && !empty($headName)) {
             $head = [
                 'id' => $headId,
                 'name' => $headName,
@@ -97,5 +97,18 @@ abstract class BaseController extends Controller
     {
         list($dia, $mes, $ano) = explode('/', @$data);
         return $ano . '-' . $mes . '-' . $dia;
+    }
+
+    protected function stringRandom($lenString = 12)
+    {
+        $chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        $var_size = strlen($chars);
+
+        $random_str = '';
+        for ($x = 0; $x < $lenString; $x++) {
+            $random_str .= $chars[rand(0, $var_size - 1)];
+        }
+
+        return $random_str;
     }
 }

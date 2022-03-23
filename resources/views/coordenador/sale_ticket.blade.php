@@ -4,9 +4,6 @@
 @section('page_title', 'Registro de venda')
 
 <script>
-    const myzapUrl = "{{ env('MYZAP_URL') }}";
-    const myzapSessionKey = "{{ env('MYZAP_SESSION_KEY') }}";
-    const myzapToken = "{{ env('MYZAP_TOKEN') }}";
     const myzapSession = "{{ $session }}";
     const apiUrl = "{{ env('APP_URL') }}";
 </script>
