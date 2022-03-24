@@ -159,12 +159,14 @@ class SalesController extends BaseController
 
     private function getTicketNumber($saleData)
     {
-        $number = $this->getNumberAvailable();
-        if (!$number && $saleData['payment_status'] === 'Pago' && empty($saleData['ticket_number'])) {
-            while (!$number) {
-                $number = Sale::getLastTicket() + 1;
-            }
-        }
+        // $number = $this->getNumberAvailable();
+        // if (!$number && $saleData['payment_status'] === 'Pago' && empty($saleData['ticket_number'])) {
+        //     while (!$number) {
+        //         $number = Sale::getLastTicket() + 1;
+        //     }
+        // }
+
+        $number = Sale::getLastTicket() + 1;
         return $number;
     }
 
