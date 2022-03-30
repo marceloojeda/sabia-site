@@ -69,7 +69,8 @@ class SalesController extends BaseController
 
         $filter = [
             'buyer' => null,
-            'seller' => null
+            'seller' => null,
+            'hasPages' => true
         ];
 
         return view('coordenador.sales_index', compact('sales', 'filter'));
@@ -93,6 +94,7 @@ class SalesController extends BaseController
         if (!empty($request->seller)) {
             $filter['seller'] = $request->seller;
         }
+        $filter['hasPages'] = false;
 
         return view('coordenador.sales_index', compact('sales', 'filter'));
     }

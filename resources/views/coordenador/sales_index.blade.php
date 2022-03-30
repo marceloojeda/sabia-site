@@ -72,7 +72,7 @@
     </tfoot>
 </table>
 
-@if (isset($sales->hasPages) && $sales->hasPages)
+@if ($filter['hasPages'])
 <div class="col-sm-12">
     <div class="d-flex justify-content-center">
         {!! $sales->links() !!}
