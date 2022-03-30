@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Route;
 
 Auth::routes();
 Route::resource('sales', 'SalesController');
-Route::post('sales/filtered', 'SalesController@index');
+Route::post('sales/filtered', 'SalesController@indexFiltered');
 
 Route::resource('calendars', 'CalendarsController');
 Route::resource('teams', 'TeamsController');

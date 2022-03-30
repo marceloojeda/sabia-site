@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Traits\DateFormat;
+use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
@@ -35,31 +36,55 @@ class Sale extends Model
         return $this->hasOne(User::class, 'id', 'user_id');
     }
 
+    /**
+     * @param Request $request
+     * @return Paginator
+     */
     public function getSquadSales(Request $request)
     {
-        $head = $request->user();
+        
+        $arrIds = $this->getSquadIds($request->user());
 
-        $results = DB::table('sales')
-            ->join('users', 'sales.user_id', 'users.id')
-            ->where('users.head_id', $head->id)
-            ->orWhere('user_id', $head->id);
+        $results = DB::table('sales')->where('payment_status', 'Pago')
+            ->whereNotNull('amount_paid')
+            ->whereIn('user_id', $arrIds);
 
         if ($request->has('trashed')) {
             $results->withTrashed();
         }
 
+        return $results->orderByDesc('sales.id')->paginate();
+    }
+
+    public function getSquadSalesFiltered(Request $request)
+    {
+        $arrIds = $this->getSquadIds($request->user());
+
+        $sales = Sale::where('payment_status', 'Pago')
+            ->whereNotNull('amount_paid')
+            ->whereIn('user_id', $arrIds);
+
+        if ($request->has('trashed')) {
+            $sales->withTrashed();
+        }
+
+        // Aplicação do filtro
         if(!empty($request->buyer)) {
-            $results->where('buyer', 'like', '%'.$request->buyer.'%');
+            $sales->where('buyer', 'like', '%'.$request->buyer.'%');
         }
         if(!empty($request->seller)) {
-            $results->where('seller', 'like', '%'.$request->seller.'%');
+            $sales->where('seller', 'like', '%'.$request->seller.'%');
         }
-        $sales = $results
-            ->select(['sales.*'])
-            ->orderByDesc('sales.id')
-            ->paginate();
 
-        return $sales;
+        return $sales->orderByDesc('sales.id')->get();
+    }
+
+    private function getSquadIds(User $head)
+    {
+        $userModel = new User();
+        $squad = $userModel->getTeam($head);
+        
+        return array_column($squad, "id");
     }
 
     public static function checkTicket($number)

@@ -67,6 +67,25 @@ class SalesController extends BaseController
             }
         }
 
+        $filter = [
+            'buyer' => null,
+            'seller' => null
+        ];
+
+        return view('coordenador.sales_index', compact('sales', 'filter'));
+    }
+
+    public function indexFiltered(Request $request)
+    {
+        $salesModel = new Sale();
+        $sales = $salesModel->getSquadSalesFiltered($request);
+
+        foreach ($sales as $k => $sale) {
+            if (!empty($sale->ticket_number)) {
+                $sales[$k]->ticket_number = str_pad(strval($sale->ticket_number), 4, '0', STR_PAD_LEFT);
+            }
+        }
+
         $filter = [];
         if (!empty($request->buyer)) {
             $filter['buyer'] = $request->buyer;

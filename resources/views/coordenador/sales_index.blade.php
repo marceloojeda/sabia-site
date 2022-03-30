@@ -6,7 +6,7 @@
 @section('content')
 
 <div class="col-sm-12">
-    <input type="hidden" id="urlApp" value="{{ env('URL_APP ') }}"
+    <input type="hidden" id="urlApp" value="{{ env('URL_APP ') }}">
     <form action="/sales/filtered" method="POST">
         <div class="row">
 
@@ -46,6 +46,7 @@
     </thead>
     <tbody>
         @foreach($sales as $sale)
+        @if (!isset($sale->show) || $sale->show !== false)
         <tr>
             <td>
                 <input type="checkbox" data-sale="{{ $sale->id }}" aria-label="Selecione para enviar esse bilhete" class="form-control check-myzap">
@@ -59,6 +60,7 @@
                 <a class="text-muted" href="/sales/{{$sale->id}}/edit">alterar venda</a>
             </td>
         </tr>
+        @endif
         @endforeach
     </tbody>
     <tfoot>
@@ -70,10 +72,12 @@
     </tfoot>
 </table>
 
+@if (isset($sales->hasPages) && $sales->hasPages)
 <div class="col-sm-12">
     <div class="d-flex justify-content-center">
         {!! $sales->links() !!}
     </div>
 </div>
+@endif
 
 @endsection
