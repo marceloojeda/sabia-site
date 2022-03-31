@@ -282,16 +282,12 @@ class SalesController extends BaseController
         }
         $saleData['payment_status'] = $sale->payment_status;
 
-        $bilhetes = $saleData['amount_paid'];
         $ticket = $sale->ticket_number ?? $this->getTicketNumber($saleData);
-        for ($i = 0; $i < $bilhetes; $i++) {
-            $saleData['amount_paid'] = 12;
-            $saleData['ticket_number'] = $ticket;
-
-            $sale->update($saleData);
-            // $ticket++;
-            $this->setSaleInNumberAvailable($sale->id, $ticket);
-        }
+        $saleData['amount_paid'] = 12;
+        $saleData['ticket_number'] = $ticket;
+        $sale->update($saleData);
+        
+        $this->setSaleInNumberAvailable($sale->id, $ticket);
 
         return redirect('/sales');
     }
@@ -312,7 +308,7 @@ class SalesController extends BaseController
     public function checkBilhetesInutilizados()
     {
         $numbersAvailable = [];
-        for ($i = 1; $i <= 2816; $i++) {
+        for ($i = 1; $i <= 3203; $i++) {
             $sale = Sale::where('payment_status', 'Pago')
                 ->whereNotNull('amount_paid')
                 ->whereNotNull('user_id')

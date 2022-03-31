@@ -9,12 +9,26 @@
     <div class="col-sm-6">
         <div class="card">
             <div class="card-header bg-primary">
-                <h4 class="card-title text-white">Meta da Promoção</h4>
+                <h4 class="card-title text-white">
+                    Meta da Promoção
+                    <span class="float-right text-warning"><small>Meta Estendida</small></span>
+                </h4>
             </div>
             <div class="card-body bg-primary text-white">
-                Meta: <b>2.160</b>
+                Meta: <b>
+                    2.160 
+                    <span class="float-right text-warning">
+                        <small>+{{ $dashData['metaEstendida']['total'] }}</small>
+                    </span>
+                </b>
                 <br>
-                Realizado: <b>{{ $dashData['totalSales'] }} ({{ number_format($dashData['totalSales']/2160*100,2) }}%)</b>
+                Realizado: 
+                <b>
+                    {{ $dashData['totalSales'] }} ({{ number_format($dashData['totalSales']/2160*100,2) }}%)
+                    <span class="float-right text-warning">
+                        <small>{{ $dashData['metaEstendida']['realizado'] }} ({{ number_format($dashData['metaEstendida']['percRealizado'], 2) }})</small>
+                    </span>
+                </b>
             </div>
         </div>
     </div>

@@ -62,9 +62,27 @@ class HomeController extends BaseController
         $totalSalesWeek = Sale::getTotalSalesPerPeriod($calendarAdm->begin_at, $calendarAdm->finish_at);
         $percSalesWeek = $totalSalesWeek / $calendarAdm->billets_goal * 100;
 
+        //Meta Estendida
+        $arrMetaEstendida = [
+            'total' => 0,
+            'realizado' => 0,
+            'percRealizado' => 0
+        ];
+        $metaGeralId = env('META_GERAL', 17);
+        $metaEstendida = Calendar::where('is_active', true)
+            ->where('id', $metaGeralId)
+            ->first();
+        if($metaEstendida) {
+            $realizado = sizeof($totalSales->toArray()) - 2160;
+            $arrMetaEstendida['total'] = $metaEstendida->billets_goal;
+            $arrMetaEstendida['realizado'] = $realizado;
+            $arrMetaEstendida['percRealizado'] = $realizado / $metaEstendida->billets_goal * 100;
+        }
+
         $dashData = [
             'totalSales' => sizeof($totalSales->toArray()),
             'totalSalesWeek' => $totalSalesWeek,
+            'metaEstendida' => $arrMetaEstendida,
             'percSalesWeek' => $percSalesWeek,
             'calendar' => $calendarAdm->toArray()
         ];
