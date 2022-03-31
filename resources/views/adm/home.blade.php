@@ -26,7 +26,7 @@
                 <b>
                     {{ $dashData['totalSales'] }} ({{ number_format($dashData['totalSales']/2160*100,2) }}%)
                     <span class="float-right text-warning">
-                        <small>{{ $dashData['metaEstendida']['realizado'] }} ({{ number_format($dashData['metaEstendida']['percRealizado'], 2) }})</small>
+                        <small>{{ $dashData['metaEstendida']['realizado'] }} ({{ number_format($dashData['metaEstendida']['percRealizado'], 2) }}%)</small>
                     </span>
                 </b>
             </div>
