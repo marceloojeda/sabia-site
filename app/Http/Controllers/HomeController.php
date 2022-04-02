@@ -65,6 +65,7 @@ class HomeController extends BaseController
         //Meta Estendida
         $arrMetaEstendida = [
             'total' => 0,
+            'totalPerc' => 0,
             'realizado' => 0,
             'percRealizado' => 0
         ];
@@ -74,7 +75,9 @@ class HomeController extends BaseController
             ->first();
         if($metaEstendida) {
             $realizado = sizeof($totalSales->toArray()) - 2160;
+            $totalPerc = $metaEstendida->billets_goal / 2160 * 100;
             $arrMetaEstendida['total'] = $metaEstendida->billets_goal;
+            $arrMetaEstendida['totalPerc'] = $totalPerc;
             $arrMetaEstendida['realizado'] = $realizado;
             $arrMetaEstendida['percRealizado'] = $realizado / $metaEstendida->billets_goal * 100;
         }

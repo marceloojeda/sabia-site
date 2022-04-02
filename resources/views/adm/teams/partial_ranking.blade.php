@@ -4,7 +4,11 @@
         <div class="card-header bg-info">
             <h4 class="card-title">
                 Ranking das Equipes
-                <span class="float-right text-dark text-muted small">{{ $week['title'] }}</span>
+                <span class="float-right text-dark text-muted small text-right">
+                    {{ $week['title'] }}
+                    <br />
+                    {{ $week['totalSales'] }}
+                </span>
             </h4>
             
         </div>

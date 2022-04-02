@@ -361,10 +361,12 @@ class TeamsController extends BaseController
         $saleModel = new Sale();
         $retorno = [];
         foreach ($weeks as $week) {
+            $totalSales = $saleModel->getTotalSalesPerPeriod($week->begin_at, $week->finish_at);
             $retorno[] = [
                 'id' => $week->id,
                 'title' => $week->title,
                 'meta' => $week->billets_goal,
+                'totalSales' => $totalSales,
                 'ranking' => $saleModel->teamRanking($week)
             ];
         }

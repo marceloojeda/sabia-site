@@ -11,7 +11,13 @@
             <div class="card-header bg-primary">
                 <h4 class="card-title text-white">
                     Meta da Promoção
-                    <span class="float-right text-warning"><small>Meta Extendida</small></span>
+                    <span class="float-right text-warning text-right">
+                        <small>
+                            Meta Extendida
+                            <!-- <br />
+                            ({{ number_format($dashData['metaEstendida']['totalPerc'], 2) }}%) -->
+                        </small>
+                    </span>
                 </h4>
             </div>
             <div class="card-body bg-primary text-white">
