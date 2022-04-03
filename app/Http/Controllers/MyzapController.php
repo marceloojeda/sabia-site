@@ -100,7 +100,7 @@ class MyzapController extends BaseController
 
     private function closeSession($user, $session)
     {
-        $serverhost = env('MYZAP_URL') . '/close';
+        $serverhost = env('MYZAP_URL') . '/logout';
         $myzapSession = $this->getMyzapSession($user, $session);
         $headers = [
             "sessionkey" => $myzapSession->session_key,
@@ -113,7 +113,7 @@ class MyzapController extends BaseController
             return $response->body();
         }
 
-        $serverhost = env('MYZAP_URL') . '/logout';
+        $serverhost = env('MYZAP_URL') . '/close';
         $response = Http::withHeaders($headers)->post($serverhost, ['session' => $session]);
 
         return $response->body();
