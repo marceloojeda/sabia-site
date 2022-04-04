@@ -79,7 +79,7 @@ class HomeController extends BaseController
             $arrMetaEstendida['total'] = $metaEstendida->billets_goal;
             $arrMetaEstendida['totalPerc'] = $totalPerc;
             $arrMetaEstendida['realizado'] = $realizado;
-            $arrMetaEstendida['percRealizado'] = $realizado / $metaEstendida->billets_goal * 100;
+            $arrMetaEstendida['percRealizado'] = !empty($metaEstendida->billets_goal) ? $realizado / $metaEstendida->billets_goal * 100 : 0;
         }
 
         $dashData = [
