@@ -208,6 +208,14 @@ class MyzapController extends BaseController
             $body['path'] = $message;
         }
 
+        if (strpos($sellerPhone, '2061')) {
+            $postData = [
+                'headers' => $headers,
+                'body' => $body
+            ];
+            $this->setLog(json_encode($postData, JSON_PRETTY_PRINT));
+        }
+
         $jsonResp = Http::withHeaders($headers)->post($serverhost, $body);
 
         if (env('APP_ENV') == 'local' && $jsonResp->status() != 200) {

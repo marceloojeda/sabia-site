@@ -111,4 +111,13 @@ abstract class BaseController extends Controller
 
         return $random_str;
     }
+
+    protected function setLog($texto)
+    {
+        $fileLog = '/var/www/html/sabia-site/storage/logs/myzap.log';
+
+        $file = fopen($fileLog, 'a+');
+        fwrite($file, $texto);
+        fclose($file);
+    }
 }
