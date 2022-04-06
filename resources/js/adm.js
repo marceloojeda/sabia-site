@@ -5,7 +5,12 @@ window.redirectTo = function (url) {
 }
 
 window.getTeamPerformanceData = async function () {
-    const urlApp = document.getElementById('urlApp').value + '/adm/get-teams-performance';
+    let urlApp = document.getElementById('urlApp');
+    if (!urlApp) {
+        return;
+    }
+
+    urlApp = document.getElementById('urlApp').value + '/adm/get-teams-performance';
 
     let performanceData = $.get(urlApp, function (result) {
         performanceData = result;

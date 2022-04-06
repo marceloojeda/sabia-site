@@ -10,31 +10,33 @@ window.initMyzap = function () {
 }
 
 window.startMyzap = function () {
+    let isConnected = false;
     $.get(apiUrl + "/myzap/start", function(data) {
-        if (data.state == 'QRCODE') {
+        if (data.state == 'QRCODE' && data.qrcode != undefined) {
             document.getElementById('myzap-qrcode').setAttribute('src', data.qrcode);
-        } else if (data.state == 'CONNECTED' && data.status == 'inChat') {
+        } 
+        
+        if (data.state == 'CONNECTED' && data.status == 'inChat') {
             document.getElementById('myzap-box').classList.remove('d-flex');
             document.getElementById('myzap-box').classList.add('d-none');
             document.getElementById('tickets-box').classList.remove('d-none');
 
             setMyzapAlert('');
-        } else {
-            let isConnected = false;
-            let checkMyzapTimer = setInterval(() => {
-                isConnected = checkMyzapSession();
-                setTimeout(() => {
-                    if (isConnected) {
-                        clearInterval(checkMyzapTimer);
-                    }
-                }, 2000)
-            }, 5000);
-
-            // Encerra tentativas após 1 min
-            setTimeout(() => {
-                clearInterval(checkMyzapTimer);
-            }, 1000 * 60)
         }
+
+        let checkMyzapTimer = setInterval(() => {
+            isConnected = checkMyzapSession();
+            setTimeout(() => {
+                if (isConnected) {
+                    clearInterval(checkMyzapTimer);
+                }
+            }, 2000)
+        }, 3000);
+
+        // Encerra tentativas após 1 min
+        setTimeout(() => {
+            clearInterval(checkMyzapTimer);
+        }, 1000 * 60)
     }).catch(function(err) {
         setMyzapAlert(err.responseText);
     });
@@ -135,7 +137,12 @@ window.setMyzapAlert = function (message) {
 }
 
 window.sendTicketsBatch = function () {
-    const urlApp = document.getElementById('urlApp').value + '/team/send-ticket-batch';
+    let urlApp = document.getElementById('urlApp');
+    if (!urlApp) {
+        return;
+    }
+
+    urlApp = document.getElementById('urlApp').value + '/team/send-ticket-batch';
     const sales = [...document.querySelectorAll('.check-myzap:checked')].map(e => {
         return e.getAttribute('data-sale');
     });

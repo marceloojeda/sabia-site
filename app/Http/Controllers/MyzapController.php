@@ -50,8 +50,6 @@ class MyzapController extends BaseController
                 "wh_qrcode" => env('APP_URL') . '/myzap/webhook?user=' . $user->id
             ];
 
-            $this->setLog(json_encode($body, JSON_PRETTY_PRINT));
-
             $jsonResp = Http::withHeaders($headers)->post($serverhost, $body);
 
             $result = json_decode($jsonResp, true);
@@ -75,7 +73,7 @@ class MyzapController extends BaseController
             return $myzapSession;
         }
 
-        $sessionKey = $this->stringRandom(8);
+        $sessionKey = $this->getUserPhone($user) . ".sabia";
         $arrSession = [
             'user_id' => $user->id,
             'session' => $session,
@@ -210,13 +208,13 @@ class MyzapController extends BaseController
             $body['path'] = $message;
         }
 
-        if (strpos($sellerPhone, '2061')) {
-            $postData = [
-                'headers' => $headers,
-                'body' => $body
-            ];
-            $this->setLog(json_encode($postData, JSON_PRETTY_PRINT));
-        }
+        // if (strpos($sellerPhone, '2061')) {
+        //     $postData = [
+        //         'headers' => $headers,
+        //         'body' => $body
+        //     ];
+        //     $this->setLog(json_encode($postData, JSON_PRETTY_PRINT));
+        // }
 
         $jsonResp = Http::withHeaders($headers)->post($serverhost, $body);
 
@@ -281,7 +279,7 @@ EOF;
         try {
             $wookData = $request->all();
 
-            $this->setLog(json_encode($request->except('qrcode'), JSON_PRETTY_PRINT));
+            // $this->setLog(json_encode($request->except('qrcode'), JSON_PRETTY_PRINT));
 
             if(empty($wookData['wook'])) {
                 return response()->noContent();

@@ -15,7 +15,12 @@ window.onload = function () {
 };
 
 window.getPerformanceData = async function () {
-    const urlApp = document.getElementById('urlApp').value + '/team/get-performance';
+    let urlApp = document.getElementById('urlApp');
+    if (!urlApp) {
+        return;
+    }
+
+    urlApp = document.getElementById('urlApp').value + '/team/get-performance';
 
     let performanceData = $.get(urlApp, function (result) {
         performanceData = result;
