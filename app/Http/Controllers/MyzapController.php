@@ -186,7 +186,7 @@ class MyzapController extends BaseController
 
         $serverhost = env('MYZAP_URL');
         if ($isFile) {
-            $serverhost .= '/sendImage';
+            $serverhost .= '/sendFile';
         } else {
             $serverhost .= '/sendText';
         }
@@ -206,6 +206,7 @@ class MyzapController extends BaseController
         if ($isFile) {
             unset($body['text']);
             $body['path'] = $message;
+            $body['caption'] = "Bilhete";
         }
 
         // if (strpos($sellerPhone, '2061')) {
@@ -228,25 +229,6 @@ class MyzapController extends BaseController
         }
 
         return $jsonResp; //->status() == 200;
-    }
-
-    private function getDefaultText()
-    {
-        $text = <<<EOF
-*Caro benfeitor*,
-
-Somos gratos pelo gesto de estender a mão ao próximo e nos auxiliar a melhor atender todas as pessoas que vem até nós em busca de luz, de amor, de uma palavra amiga!
-*Que Deus multiplique as bençãos em sua vida!*
-
-O resultado do sorteio dos 3 prêmios será divulgado em nosso *site* e no nosso *Instagram* no dia 17 abril de 2022.
-
-Nos acompanhe no Insta: instagram.com/ocantosabia
-E em nosso site: ocantodosabia.com.br
-
-*Equipe de Promoções*
-EOF;
-
-        return $text;
     }
 
     public function storeBillet(Request $request)
@@ -293,5 +275,24 @@ EOF;
         } catch (\Throwable $th) {
             return response($th->getMessage(), 500);
         }
+    }
+
+    private function getDefaultText()
+    {
+        $text = <<<EOF
+*Caro benfeitor*,
+
+Somos gratos pelo gesto de estender a mão ao próximo e nos auxiliar a melhor atender todas as pessoas que vem até nós em busca de luz, de amor, de uma palavra amiga!
+*Que Deus multiplique as bençãos em sua vida!*
+
+O resultado do sorteio dos 3 prêmios será divulgado em nosso *site* e no nosso *Instagram* no dia 17 abril de 2022.
+
+Nos acompanhe no Insta: instagram.com/ocantosabia
+E em nosso site: ocantodosabia.com.br
+
+*Equipe de Promoções*
+EOF;
+
+        return $text;
     }
 }
