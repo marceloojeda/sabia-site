@@ -100,21 +100,21 @@ class MyzapController extends BaseController
 
     private function closeSession($user, $session)
     {
-        $serverhost = env('MYZAP_URL') . '/close';
+        // $serverhost = env('MYZAP_URL') . '/close';
         $myzapSession = $this->getMyzapSession($user, $session);
         $headers = [
             "sessionkey" => $myzapSession->session_key,
             'Content-Type' => 'application/json'
         ];
 
-        $response = Http::withHeaders($headers)->post($serverhost, ['session' => $session]);
+        // $response = Http::withHeaders($headers)->post($serverhost, ['session' => $session]);
 
         // if ($response->status() != 200) {
         //     return $response->body();
         // }
 
-        // $serverhost = env('MYZAP_URL') . '/close';
-        // $response = Http::withHeaders($headers)->post($serverhost, ['session' => $session]);
+        $serverhost = env('MYZAP_URL') . '/close';
+        $response = Http::withHeaders($headers)->post($serverhost, ['session' => $session]);
 
         return $response->body();
     }
@@ -278,6 +278,8 @@ EOF;
         
         try {
             $wookData = $request->all();
+
+            $this->setLog(json_encode($request->except('qrcode'), JSON_PRETTY_PRINT));
 
             if(empty($wookData['wook'])) {
                 return response()->noContent();
