@@ -50,6 +50,8 @@ class MyzapController extends BaseController
                 "wh_qrcode" => env('APP_URL') . '/myzap/webhook?user=' . $user->id
             ];
 
+            $this->setLog(json_encode($body, JSON_PRETTY_PRINT));
+
             $jsonResp = Http::withHeaders($headers)->post($serverhost, $body);
 
             $result = json_decode($jsonResp, true);
