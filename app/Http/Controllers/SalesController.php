@@ -180,14 +180,17 @@ class SalesController extends BaseController
 
     private function getTicketNumber($saleData)
     {
-        // $number = $this->getNumberAvailable();
+        $number = $this->getNumberAvailable();
         // if (!$number && $saleData['payment_status'] === 'Pago' && empty($saleData['ticket_number'])) {
-        //     while (!$number) {
-        //         $number = Sale::getLastTicket() + 1;
-        //     }
-        // }
+        if (!$number) {
+            // while (!$number) {
+            //     $number = Sale::getLastTicket() + 1;
+            // }
 
-        $number = Sale::getLastTicket() + 1;
+            $number = Sale::getLastTicket() + 1;
+        }
+
+        // $number = Sale::getLastTicket() + 1;
         return $number;
     }
 
@@ -308,16 +311,16 @@ class SalesController extends BaseController
     public function checkBilhetesInutilizados()
     {
         $numbersAvailable = [];
-        for ($i = 1; $i <= 3203; $i++) {
+        for ($billet = 1; $billet <= 3835; $billet++) {
             $sale = Sale::where('payment_status', 'Pago')
                 ->whereNotNull('amount_paid')
                 ->whereNotNull('user_id')
-                ->where('ticket_number', $i)
+                ->where('ticket_number', $billet)
                 ->select('id')
                 ->first();
 
             if(!$sale) {
-                array_push($numbersAvailable, $i);
+                array_push($numbersAvailable, $billet);
             }
         }
 
@@ -328,8 +331,16 @@ class SalesController extends BaseController
 
     private function makeBillets(array $numbersAvailable)
     {
+        $dataAtual = date('Y-m-d H:i:s');
         foreach ($numbersAvailable as $number) {
-            $result = DB::insert('insert into billets_control (number) values (?)', [$number]);
+            
+            $numberAvailable = DB::table('billets_control')->where('number', $number)->select('id')->first();
+            if ($numberAvailable) {
+                continue;
+            }
+
+            $sql = sprintf("insert into billets_control (number, created_at, updated_at) values (%d, '%s', '%s')", $number, $dataAtual, $dataAtual);
+            $result = DB::insert($sql);
         }
     }
 }
