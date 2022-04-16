@@ -314,8 +314,6 @@ EOF;
 
     public function obrigado(Request $request)
     {
-        $dataAtual = date('Y-m-d H:i:s');
-        dd($dataAtual);
         $dados = [
             'head' => $request->user()
         ];
