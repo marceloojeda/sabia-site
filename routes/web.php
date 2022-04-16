@@ -37,3 +37,6 @@ Route::get('/adm/get-teams-ranking', 'TeamsController@getWeeksRanking');
 
 Route::get('/adm/check-bilhetes', 'SalesController@checkBilhetesInutilizados');
 Route::get('/adm/duplicate-sales', 'TeamsController@checkDuplicatesSales');
+
+Route::get('/obrigado', 'HomeController@obrigado');
+Route::post('/adm/raffle', 'SalesController@checkWinner')->name('adm.raffle');

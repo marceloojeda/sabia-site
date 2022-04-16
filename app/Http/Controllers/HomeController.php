@@ -40,6 +40,12 @@ class HomeController extends BaseController
             return view('adm.home', compact('dashData'));
         }
 
+        $dataAtual = date('Y-m-d H:i:s');
+
+        if ($dataAtual > '2022-04-17 16:00:00') {
+            return redirect('/obrigado');
+        }
+
         $dashInfo = $this->getHeadDashInfo($request);
         $headAlert = $dashInfo;
 
@@ -304,5 +310,16 @@ class HomeController extends BaseController
 EOF;
 
         return DB::select($sql);
+    }
+
+    public function obrigado(Request $request)
+    {
+        $dataAtual = date('Y-m-d H:i:s');
+        dd($dataAtual);
+        $dados = [
+            'head' => $request->user()
+        ];
+
+        return View('coordenador.team.obrigado', compact('dados'));
     }
 }

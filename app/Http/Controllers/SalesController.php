@@ -160,7 +160,7 @@ class SalesController extends BaseController
 
             $obj = Sale::create($saleData);
             $obj->refresh();
-            
+
             $this->setSaleInNumberAvailable($obj->id, $ticket);
 
             $arrSale = $obj->toArray();
@@ -198,7 +198,7 @@ class SalesController extends BaseController
     {
         $arrNumbers = Sale::getNumberAvailable();
 
-        if(empty($arrNumbers)) {
+        if (empty($arrNumbers)) {
             return null;
         }
 
@@ -206,7 +206,7 @@ class SalesController extends BaseController
         $number = $arrNumbers[$index]->number;
         $id = $arrNumbers[$index]->id;
 
-        DB::update('update billets_control set available = ?, updated_at = ? where id = ? and number = ?', [false, date('Y-m-d H:i:s'), $id, $number ]);
+        DB::update('update billets_control set available = ?, updated_at = ? where id = ? and number = ?', [false, date('Y-m-d H:i:s'), $id, $number]);
 
         return $number;
     }
@@ -214,7 +214,7 @@ class SalesController extends BaseController
     private function setSaleInNumberAvailable($saleId, $number)
     {
         $numberAvailable = DB::table('billets_controls')->where('number', $number)->where('available', false);
-        if($numberAvailable) {
+        if ($numberAvailable) {
             DB::update('update billets_control set sale_id = ? where number = ?', [$saleId, $number]);
         }
     }
@@ -289,7 +289,7 @@ class SalesController extends BaseController
         $saleData['amount_paid'] = 12;
         $saleData['ticket_number'] = $ticket;
         $sale->update($saleData);
-        
+
         $this->setSaleInNumberAvailable($sale->id, $ticket);
 
         return redirect('/sales');
@@ -319,7 +319,7 @@ class SalesController extends BaseController
                 ->select('id')
                 ->first();
 
-            if(!$sale) {
+            if (!$sale) {
                 array_push($numbersAvailable, $billet);
             }
         }
@@ -333,7 +333,7 @@ class SalesController extends BaseController
     {
         $dataAtual = date('Y-m-d H:i:s');
         foreach ($numbersAvailable as $number) {
-            
+
             $numberAvailable = DB::table('billets_control')->where('number', $number)->select('id')->first();
             if ($numberAvailable) {
                 continue;
@@ -342,5 +342,38 @@ class SalesController extends BaseController
             $sql = sprintf("insert into billets_control (number, created_at, updated_at) values (%d, '%s', '%s')", $number, $dataAtual, $dataAtual);
             $result = DB::insert($sql);
         }
+    }
+
+    public function checkWinner(Request $request)
+    {
+        $params = $request->except('_token');
+        $numero = $params['numero'] ?? 0;
+
+        $sale = Sale::whereNotNull('amount_paid')
+            ->where('payment_status', 'Pago')
+            ->where('ticket_number', $numero)
+            ->first();
+
+        if (!$sale) {
+            // dd($params);
+            return View('adm.teams.raffle', [
+                'filter' => $params,
+                'winner' => null
+            ]);
+        }
+
+        $arrSale = $sale->toArray();
+        $winner = [
+            'billet' => str_pad(strval($arrSale['ticket_number']), 4, '0', STR_PAD_LEFT),
+            'buyer' => $arrSale['buyer'],
+            'buyerPhone' => $arrSale['buyer_phone'],
+            'saleDate' => $this->toDateBr($arrSale['created_at']),
+            'seller' => $arrSale['seller']
+        ];
+
+        return view('adm.teams.raffle', [
+            'filter' => $params,
+            'winner' => $winner
+        ]);
     }
 }
