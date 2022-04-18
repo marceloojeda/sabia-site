@@ -108,6 +108,8 @@ class SalesController extends BaseController
     {
         $this->checkPerfilUsuario($request);
 
+        return redirect('/home');
+
         $this->arrVendedores = $this->getVendedores($request->user()->id, $request->user()->name);
 
         $saleObj = new Sale();
@@ -254,6 +256,8 @@ class SalesController extends BaseController
     {
         $this->checkPerfilUsuario($request);
 
+        return redirect('/home');
+
         $this->arrVendedores = $this->getVendedores($request->user()->id, $request->user()->name);
 
         return view('coordenador.sale_edit', [
@@ -311,7 +315,7 @@ class SalesController extends BaseController
     public function checkBilhetesInutilizados()
     {
         $numbersAvailable = [];
-        for ($billet = 1; $billet <= 3835; $billet++) {
+        for ($billet = 1; $billet <= 4635; $billet++) {
             $sale = Sale::where('payment_status', 'Pago')
                 ->whereNotNull('amount_paid')
                 ->whereNotNull('user_id')
